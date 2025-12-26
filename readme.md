@@ -67,96 +67,9 @@ CREATE TABLE Manager
       FOREIGN KEY (EmployeeId)
       REFERENCES Employee(Id)
 );
-
-ALTER TABLE Employee
-ADD ManagerId INT NULL,
-    CONSTRAINT FK_Employee_Manager
-      FOREIGN KEY (ManagerId)
-      REFERENCES Manager(Id);
-
-CREATE TABLE Customer
-(
-    Id                INT IDENTITY(1,1) PRIMARY KEY,
-    FirstName         NVARCHAR(100)   NOT NULL,
-    LastName          NVARCHAR(100)   NOT NULL,
-    Email             VARCHAR(255)    NOT NULL,
-    Phone             VARCHAR(30)     NULL,
-    CompanyId         INT             NULL,
-    CreatedAt         DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
-    ModifiedAt        DATETIME2       NULL,
-
-    CONSTRAINT FK_Customer_Company
-       FOREIGN KEY (CompanyId)
-       REFERENCES Company(Id),
-);
-
-CREATE TABLE Product
-(
-    Id          INT IDENTITY(1,1) PRIMARY KEY,
-    Sku         VARCHAR(50)     NOT NULL,
-    Name        NVARCHAR(200)   NOT NULL,
-    Description NVARCHAR(MAX)   NULL,
-    UnitPrice   DECIMAL(18,2)   NOT NULL,
-    StockQty    INT             NOT NULL DEFAULT 0,
-    IsActive    BIT             NOT NULL DEFAULT 1,
-    CreatedAt   DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
-    ModifiedAt  DATETIME2       NULL,
-
-    CONSTRAINT UQ_Product_Sku UNIQUE (Sku)
-);
-
-CREATE TABLE [Order]
-(
-    Id                INT IDENTITY(1,1) PRIMARY KEY,
-    OrderNumber       VARCHAR(30)     NOT NULL,
-    CustomerId        INT             NOT NULL,
-    OrderDate         DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
-    Status            VARCHAR(20)     NOT NULL DEFAULT 'Pending',
-    SubTotal          DECIMAL(18,2)   NOT NULL DEFAULT 0,
-    Tax               DECIMAL(18,2)   NOT NULL DEFAULT 0,
-    Total             DECIMAL(18,2)   NOT NULL DEFAULT 0,
-    Notes             NVARCHAR(1000)  NULL,
-    CreatedAt         DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
-    ModifiedAt        DATETIME2       NULL,
-
-    CONSTRAINT UQ_Order_OrderNumber
-      UNIQUE (OrderNumber),
-    CONSTRAINT FK_Order_Customer
-      FOREIGN KEY (CustomerId) REFERENCES Customer(Id),
-);
-
-CREATE TABLE OrderItem
-(
-    Id          INT IDENTITY(1,1) PRIMARY KEY,
-    OrderId     INT             NOT NULL,
-    ProductId   INT             NOT NULL,
-    Quantity    INT             NOT NULL,
-    UnitPrice   DECIMAL(18,2)   NOT NULL,
-    Discount    DECIMAL(18,2)   NOT NULL DEFAULT 0,
-    LineTotal   AS (Quantity * UnitPrice - Discount) PERSISTED,
-
-    CONSTRAINT FK_OrderItem_Order
-      FOREIGN KEY (OrderId)
-      REFERENCES [Order](Id)
-      ON DELETE CASCADE,
-    CONSTRAINT FK_OrderItem_Product
-      FOREIGN KEY (ProductId)
-      REFERENCES Product(Id),
-    CONSTRAINT CK_OrderItem_Quantity
-      CHECK (Quantity > 0)
-);
-
-CREATE INDEX IX_Employee_CompanyId ON Employee(CompanyId);
-CREATE INDEX IX_Employee_ManagerId ON Employee(ManagerId);
-CREATE INDEX IX_Customer_CompanyId ON Customer(CompanyId);
-CREATE INDEX IX_Customer_Email ON Customer(Email);
-CREATE INDEX IX_Order_CustomerId ON [Order](CustomerId);
-CREATE INDEX IX_Order_OrderDate ON [Order](OrderDate);
-CREATE INDEX IX_Order_Status ON [Order](Status);
-CREATE INDEX IX_OrderItem_OrderId ON OrderItem(OrderId);
-CREATE INDEX IX_OrderItem_ProductId ON OrderItem(ProductId);
+-- rest of schema omitted from docs
 ```
-<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L45-L176' title='Snippet source file'>snippet source</a> | <a href='#snippet-SampleSchema' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L45-L89' title='Snippet source file'>snippet source</a> | <a href='#snippet-SampleSchema' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

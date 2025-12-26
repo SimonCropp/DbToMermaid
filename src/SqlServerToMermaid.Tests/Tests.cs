@@ -85,7 +85,8 @@ public class Tests
                       FOREIGN KEY (EmployeeId)
                       REFERENCES Employee(Id)
                 );
-
+                -- rest of schema omitted from docs
+                -- end-snippet
                 ALTER TABLE Employee
                 ADD ManagerId INT NULL,
                     CONSTRAINT FK_Employee_Manager
@@ -173,7 +174,6 @@ public class Tests
                 CREATE INDEX IX_Order_Status ON [Order](Status);
                 CREATE INDEX IX_OrderItem_OrderId ON OrderItem(OrderId);
                 CREATE INDEX IX_OrderItem_ProductId ON OrderItem(ProductId);
-                -- end-snippet
                 """;
             await command.ExecuteNonQueryAsync();
         }
