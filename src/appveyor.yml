@@ -8,7 +8,7 @@ build_script:
     Invoke-WebRequest "https://dot.net/v1/dotnet-install.ps1" -OutFile "./dotnet-install.ps1"
     ./dotnet-install.ps1 -JSonFile src/global.json -Architecture x64 -InstallDir 'C:\Program Files\dotnet'
 - dotnet build src --configuration Release --nologo
-- dotnet test src --configuration Release --no-build --no-restore --nologo --filter Category!=Integration -p:TestingPlatformDotnetTestSupport=true
+- dotnet test src --configuration Release --no-restore --nologo --filter Category!=Integration
 test: off
 artifacts:
 - path: nugets\*.nupkg
