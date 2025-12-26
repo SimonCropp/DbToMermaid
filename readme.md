@@ -363,7 +363,7 @@ var markdown = await EfToMermaid.RenderMarkdown(context.Model);
 <!-- endSnippet -->
 
 
-### Output
+### Result
 
 <!-- include: EfToMermaid.Tests/Tests.RenderMarkdown.verified.md -->
 ```mermaid
