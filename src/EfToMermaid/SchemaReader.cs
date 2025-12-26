@@ -55,14 +55,13 @@ static class SchemaReader
         return new(model.GetDefaultSchema() ?? "dbo", tables, foreignKeys);
     }
 
-    private static Column BuildColumn(IProperty _, StoreObjectIdentifier storeObject)
+    private static Column BuildColumn(IProperty property, StoreObjectIdentifier storeObject)
     {
-        var name = _.GetColumnName(storeObject) ?? _.Name;
-        var storeType = _.GetColumnType(storeObject);
-        var type = FormatType(storeType, _.ClrType);
-        var nullable = _.IsNullable;
-        var isComputed = _.GetComputedColumnSql(storeObject) is not null;
-        return new Column(0, name, type, nullable, isComputed);
+        var name = property.GetColumnName(storeObject) ?? property.Name;
+        var storeType = property.GetColumnType(storeObject);
+        var type = FormatType(storeType, property.ClrType);
+        var isComputed = property.GetComputedColumnSql(storeObject) is not null;
+        return new Column(0, name, type, property.IsNullable, isComputed);
     }
 
     static string FormatType(string? storeType, Type clrType)
