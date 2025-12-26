@@ -15,7 +15,11 @@ Generate [Mermaid ER diagrams](https://mermaid.js.org/syntax/entityRelationshipD
 
 ## SqlServerToMermaid
 
-Renders Mermaid ER diagrams directly from a SQL Server database using SQL Server Management Objects (SMO).
+Renders Mermaid ER diagrams directly from either:
+
+ * A running SQL Server database using [SQL Server Management Objects (SMO)](https://learn.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/sql-server-management-objects-smo-programming-guide?view=sql-server-ver17).
+ * A sql schema script using [SqlScriptDOM](https://github.com/microsoft/SqlScriptDOM)
+
 
 ### Schema
 
