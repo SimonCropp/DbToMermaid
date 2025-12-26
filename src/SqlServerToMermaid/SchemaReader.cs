@@ -28,7 +28,8 @@ static class SchemaReader
                         Ordinal: _.ID,
                         Name: _.Name,
                         Type: FormatType(_.DataType),
-                        IsNullable: _.Nullable))
+                        IsNullable: _.Nullable,
+                        Computed: _.Computed))
                     .ToList();
 
                 return new Table(table.Schema, table.Name, columns, primaryKeys);

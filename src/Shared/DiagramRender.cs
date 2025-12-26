@@ -78,6 +78,10 @@ static class DiagramRender
 
         await writer.WriteAsync(" \"");
         await writer.WriteAsync(column.IsNullable ? "null" : "not null");
+        if (column.Computed)
+        {
+            await writer.WriteAsync(", computed");
+        }
         await writer.WriteAsync('"');
         await writer.WriteLineAsync();
     }

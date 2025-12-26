@@ -1,4 +1,4 @@
-
+﻿
 ```mermaid
 erDiagram
   Address {
@@ -75,7 +75,7 @@ erDiagram
     int Quantity "not null"
     decimal UnitPrice "not null"
     decimal Discount "not null"
-    decimal LineTotal "null"
+    decimal LineTotal "null, computed"
   }
   Product {
     int Id(pk) "not null"

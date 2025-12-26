@@ -421,6 +421,7 @@ erDiagram
  * Includes all tables with columns and data types
  * Marks primary keys with `(pk)` notation
  * Shows nullability for each column
+ * Indicates computed columns with `computed` annotation
  * Renders foreign key relationships
  * Handles custom database schemas (prefixes table names when not `dbo`)
  * Async-first API with cancellation token support

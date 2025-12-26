@@ -20,14 +20,7 @@ static class SchemaReader
             var properties = group
                 .SelectMany(_ => _.GetProperties())
                 .DistinctBy(_ => _.Name)
-                .Select(_ =>
-                {
-                    var columnName = _.GetColumnName(storeObject) ?? _.Name;
-                    var storeType = _.GetColumnType(storeObject);
-                    var type = FormatType(storeType, _.ClrType);
-                    var nullable = _.IsNullable;
-                    return new Column(0, columnName, type, nullable);
-                })
+                .Select(_ => BuildColumn(_, storeObject))
                 .OrderBy(_ => _.Name, StringComparer.Ordinal)
                 .Select((c, i) => c with { Ordinal = i })
                 .ToList();
@@ -60,6 +53,16 @@ static class SchemaReader
             .ToList();
 
         return new(model.GetDefaultSchema() ?? "dbo", tables, foreignKeys);
+    }
+
+    private static Column BuildColumn(IProperty _, StoreObjectIdentifier storeObject)
+    {
+        var name = _.GetColumnName(storeObject) ?? _.Name;
+        var storeType = _.GetColumnType(storeObject);
+        var type = FormatType(storeType, _.ClrType);
+        var nullable = _.IsNullable;
+        var isComputed = _.GetComputedColumnSql(storeObject) is not null;
+        return new Column(0, name, type, nullable, isComputed);
     }
 
     static string FormatType(string? storeType, Type clrType)
