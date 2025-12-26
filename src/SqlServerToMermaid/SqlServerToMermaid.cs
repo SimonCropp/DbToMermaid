@@ -30,6 +30,18 @@ public sealed class SqlServerToMermaid
     }
 
     /// <summary>
+    /// Renders a Mermaid ER diagram from a SQL Server database to a TextWriter.
+    /// </summary>
+    /// <param name="connection">The SQL Server connection to read the schema from.</param>
+    /// <param name="writer">The TextWriter to write the diagram to.</param>
+    /// <param name="cancel">Optional cancellation token.</param>
+    public static async Task Render(SqlConnection connection, TextWriter writer, Cancel cancel = default)
+    {
+        var database = await SchemaReader.Read(connection, cancel);
+        await DiagramRender.Render(writer, database, cancel);
+    }
+
+    /// <summary>
     /// Renders a Mermaid ER diagram as a Markdown code block and writes it to a file.
     /// </summary>
     /// <param name="connection">The SQL Server connection to read the schema from.</param>
