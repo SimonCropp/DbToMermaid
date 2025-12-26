@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Description>Renders a Sql Server schema to a Mermaid diagram.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" />
+    <PackageReference Include="ProjectDefaults" PrivateAssets="true" />
+    <Compile Include="..\Shared\*.cs"/>
+  </ItemGroup>
+
+</Project>

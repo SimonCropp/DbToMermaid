@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/SolutionItems/">
+    <File Path="../.gitignore" />
+    <File Path="../readme.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+  </Folder>
+  <Project Path="Shared/Shared.csproj" />
+  <Project Path="SqlServerToMermaid.Tests/SqlServerToMermaid.Tests.csproj" />
+  <Project Path="SqlServerToMermaid/SqlServerToMermaid.csproj" />
+  <Project Path="EfToMermaid/EfToMermaid.csproj" />
+  <Project Path="EfToMermaid.Tests/EfToMermaid.Tests.csproj" />
+</Solution>

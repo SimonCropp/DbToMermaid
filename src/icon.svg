@@ -1,0 +1,28 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="dbGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF3670;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#FF3670;stop-opacity:0.1"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Database cylinder in background -->
+  <g>
+    <!-- Database body -->
+    <path d="M120,160 L120,352 C120,380 180,400 256,400 C332,400 392,380 392,352 L392,160" 
+          fill="white" stroke="#FF3670" stroke-width="8"/>
+    <!-- Database bottom cap -->
+    <ellipse cx="256" cy="352" rx="136" ry="48" fill="white" stroke="#FF3670" stroke-width="8"/>
+    <!-- Database top ellipse -->
+    <ellipse cx="256" cy="160" rx="136" ry="48" fill="white" stroke="#FF3670" stroke-width="8"/>
+    <!-- Database middle front arc -->
+    <path d="M120,256 C120,284 180,304 256,304 C332,304 392,284 392,256" fill="none" stroke="#FF3670" stroke-width="8" opacity="0.5"/>
+    
+  </g>
+  
+  <!-- Mermaid-inspired symmetric shape - scaled down to 65% and centered -->
+  <g transform="translate(256, 270) scale(0.65) translate(-245, -245)">
+    <path d="M407.48,111.18C335.587,108.103 269.573,152.338 245.08,220C220.587,152.338 154.573,108.103 82.68,111.18C80.285,168.229 107.577,222.632 154.74,254.82C178.908,271.419 193.35,298.951 193.27,328.27L193.27,379.13L296.9,379.13L296.9,328.27C296.816,298.953 311.255,271.42 335.42,254.82C382.596,222.644 409.892,168.233 407.48,111.18Z" 
+          fill="#FF3670"/>
+  </g>
+</svg>

@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsTestProject>true</IsTestProject>
+    <RootNamespace>TestProject</RootNamespace>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="ProjectDefaults" PrivateAssets="true" />
+    <PackageReference Include="TUnit" />
+    <PackageReference Include="Verify.DiffPlex" />
+    <PackageReference Include="Verify.TUnit" />
+    <ProjectReference Include="..\EfToMermaid\EfToMermaid.csproj" />
+  </ItemGroup>
+
+</Project>
