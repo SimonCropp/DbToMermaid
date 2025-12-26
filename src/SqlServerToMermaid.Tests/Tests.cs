@@ -55,21 +55,6 @@ public class Tests
                     ModifiedAt  DATETIME2       NULL
                 );
 
-                CREATE TABLE Address
-                (
-                    Id          INT IDENTITY(1,1) PRIMARY KEY,
-                    Street      NVARCHAR(200)   NOT NULL,
-                    City        NVARCHAR(100)   NOT NULL,
-                    State       NVARCHAR(100)   NULL,
-                    PostCode    VARCHAR(20)     NULL,
-                    Country     NVARCHAR(100)   NOT NULL,
-                    AddressType VARCHAR(20)     NOT NULL DEFAULT 'Billing',
-                    CompanyId   INT             NULL,
-                    CreatedAt   DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
-
-                    CONSTRAINT FK_Address_Company FOREIGN KEY (CompanyId) REFERENCES Company(Id)
-                );
-
                 CREATE TABLE Employee
                 (
                     Id          INT IDENTITY(1,1) PRIMARY KEY,
@@ -79,16 +64,12 @@ public class Tests
                     Phone       VARCHAR(30)     NULL,
                     HireDate    DATE            NOT NULL,
                     CompanyId   INT             NOT NULL,
-                    AddressId   INT             NULL,
                     CreatedAt   DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
                     ModifiedAt  DATETIME2       NULL,
 
                     CONSTRAINT FK_Employee_Company
                       FOREIGN KEY (CompanyId)
                       REFERENCES Company(Id),
-                    CONSTRAINT FK_Employee_Address
-                      FOREIGN KEY (AddressId)
-                      REFERENCES Address(Id)
                 );
 
                 CREATE TABLE Manager
@@ -119,20 +100,12 @@ public class Tests
                     Email             VARCHAR(255)    NOT NULL,
                     Phone             VARCHAR(30)     NULL,
                     CompanyId         INT             NULL,
-                    BillingAddressId  INT             NULL,
-                    ShippingAddressId INT             NULL,
                     CreatedAt         DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
                     ModifiedAt        DATETIME2       NULL,
 
                     CONSTRAINT FK_Customer_Company
                        FOREIGN KEY (CompanyId)
                        REFERENCES Company(Id),
-                    CONSTRAINT FK_Customer_BillingAddress
-                       FOREIGN KEY (BillingAddressId)
-                       REFERENCES Address(Id),
-                    CONSTRAINT FK_Customer_ShippingAddress
-                       FOREIGN KEY (ShippingAddressId)
-                       REFERENCES Address(Id)
                 );
 
                 CREATE TABLE Product
@@ -161,7 +134,6 @@ public class Tests
                     Tax               DECIMAL(18,2)   NOT NULL DEFAULT 0,
                     Total             DECIMAL(18,2)   NOT NULL DEFAULT 0,
                     Notes             NVARCHAR(1000)  NULL,
-                    ShippingAddressId INT             NULL,
                     CreatedAt         DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
                     ModifiedAt        DATETIME2       NULL,
 
@@ -169,9 +141,6 @@ public class Tests
                       UNIQUE (OrderNumber),
                     CONSTRAINT FK_Order_Customer
                       FOREIGN KEY (CustomerId) REFERENCES Customer(Id),
-                    CONSTRAINT FK_Order_ShippingAddress
-                      FOREIGN KEY (ShippingAddressId)
-                      REFERENCES Address(Id)
                 );
 
                 CREATE TABLE OrderItem
@@ -204,7 +173,6 @@ public class Tests
                 CREATE INDEX IX_Order_Status ON [Order](Status);
                 CREATE INDEX IX_OrderItem_OrderId ON OrderItem(OrderId);
                 CREATE INDEX IX_OrderItem_ProductId ON OrderItem(ProductId);
-                CREATE INDEX IX_Address_CompanyId ON Address(CompanyId);
                 -- end-snippet
                 """;
             await command.ExecuteNonQueryAsync();

@@ -1,17 +1,6 @@
-
+﻿
 ```mermaid
 erDiagram
-  Address {
-    int Id(pk) "not null"
-    nvarchar Street "not null"
-    nvarchar City "not null"
-    nvarchar State "null"
-    varchar PostCode "null"
-    nvarchar Country "not null"
-    varchar AddressType "not null"
-    int CompanyId "null"
-    datetime2 CreatedAt "not null"
-  }
   Company {
     int Id(pk) "not null"
     nvarchar Name "not null"
@@ -28,8 +17,6 @@ erDiagram
     varchar Email "not null"
     varchar Phone "null"
     int CompanyId "null"
-    int BillingAddressId "null"
-    int ShippingAddressId "null"
     datetime2 CreatedAt "not null"
     datetime2 ModifiedAt "null"
   }
@@ -41,7 +28,6 @@ erDiagram
     varchar Phone "null"
     date HireDate "not null"
     int CompanyId "not null"
-    int AddressId "null"
     datetime2 CreatedAt "not null"
     datetime2 ModifiedAt "null"
     int ManagerId "null"
@@ -64,7 +50,6 @@ erDiagram
     decimal Tax "not null"
     decimal Total "not null"
     nvarchar Notes "null"
-    int ShippingAddressId "null"
     datetime2 CreatedAt "not null"
     datetime2 ModifiedAt "null"
   }
@@ -88,11 +73,6 @@ erDiagram
     datetime2 CreatedAt "not null"
     datetime2 ModifiedAt "null"
   }
-  Address ||--o{ Customer : "FK_Customer_BillingAddress"
-  Address ||--o{ Customer : "FK_Customer_ShippingAddress"
-  Address ||--o{ Employee : "FK_Employee_Address"
-  Address ||--o{ Order : "FK_Order_ShippingAddress"
-  Company ||--o{ Address : "FK_Address_Company"
   Company ||--o{ Customer : "FK_Customer_Company"
   Company ||--o{ Employee : "FK_Employee_Company"
   Customer ||--o{ Order : "FK_Order_Customer"
