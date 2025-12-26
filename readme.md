@@ -184,7 +184,7 @@ CREATE INDEX IX_OrderItem_OrderId ON OrderItem(OrderId);
 CREATE INDEX IX_OrderItem_ProductId ON OrderItem(ProductId);
 CREATE INDEX IX_Address_CompanyId ON Address(CompanyId);
 ```
-<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L29-L192' title='Snippet source file'>snippet source</a> | <a href='#snippet-SampleSchema' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L45-L208' title='Snippet source file'>snippet source</a> | <a href='#snippet-SampleSchema' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -305,6 +305,26 @@ erDiagram
   Product ||--o{ OrderItem : "FK_OrderItem_Product"
 ```
 <!-- endInclude -->
+
+
+### From SQL Script
+
+Diagrams can also be generated directly from a SQL script string without a database connection:
+
+<!-- snippet: SqlServerScriptUsage -->
+<a id='snippet-SqlServerScriptUsage'></a>
+```cs
+var script = """
+    CREATE TABLE Customers (
+        Id INT PRIMARY KEY,
+        Name NVARCHAR(100) NOT NULL
+    );
+    """;
+
+var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+```
+<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L23-L34' title='Snippet source file'>snippet source</a> | <a href='#snippet-SqlServerScriptUsage' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
 
 
 ## EfToMermaid

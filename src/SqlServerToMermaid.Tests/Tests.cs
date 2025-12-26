@@ -18,6 +18,22 @@ public class Tests
         #endregion
     }
 
+    static async Task ScriptUsage()
+    {
+        #region SqlServerScriptUsage
+
+        var script = """
+            CREATE TABLE Customers (
+                Id INT PRIMARY KEY,
+                Name NVARCHAR(100) NOT NULL
+            );
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        #endregion
+    }
+
     [Test]
     public async Task RenderMarkdown()
     {
@@ -228,6 +244,90 @@ public class Tests
         }
 
         var markdown = await SqlServerToMermaid.RenderMarkdown(database.Connection);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task RenderMarkdownFromScript()
+    {
+        var script = """
+            CREATE TABLE Company
+            (
+                Id          INT PRIMARY KEY,
+                Name        NVARCHAR(200)   NOT NULL,
+                CreatedAt   DATETIME2       NOT NULL
+            );
+
+            CREATE TABLE Employee
+            (
+                Id          INT PRIMARY KEY,
+                FirstName   NVARCHAR(100)   NOT NULL,
+                LastName    NVARCHAR(100)   NOT NULL,
+                CompanyId   INT             NOT NULL,
+                Salary      DECIMAL(18,2)   NOT NULL,
+                Bonus       DECIMAL(18,2)   NOT NULL,
+                TotalPay    AS (Salary + Bonus),
+
+                CONSTRAINT FK_Employee_Company
+                  FOREIGN KEY (CompanyId)
+                  REFERENCES Company(Id)
+            );
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task RenderMarkdownFromScriptWithSchema()
+    {
+        var script = """
+            CREATE TABLE sales.Customers
+            (
+                CustomerId INT PRIMARY KEY,
+                Name NVARCHAR(50) NOT NULL
+            );
+
+            CREATE TABLE sales.Orders
+            (
+                OrderId INT PRIMARY KEY,
+                CustomerId INT NOT NULL,
+
+                CONSTRAINT FK_Orders_Customers
+                  FOREIGN KEY (CustomerId)
+                  REFERENCES sales.Customers(CustomerId)
+            );
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task RenderMarkdownFromScriptWithAlterTable()
+    {
+        var script = """
+            CREATE TABLE Parent
+            (
+                Id INT PRIMARY KEY
+            );
+
+            CREATE TABLE Child
+            (
+                Id INT PRIMARY KEY,
+                ParentId INT NULL
+            );
+
+            ALTER TABLE Child
+            ADD CONSTRAINT FK_Child_Parent
+              FOREIGN KEY (ParentId)
+              REFERENCES Parent(Id);
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
 
         await Verify(markdown, extension: "md");
     }

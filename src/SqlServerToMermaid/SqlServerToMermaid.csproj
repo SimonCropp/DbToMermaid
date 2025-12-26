@@ -8,8 +8,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" />
+    <PackageReference Include="Microsoft.SqlServer.TransactSql.ScriptDom" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="true" />
-    <Compile Include="..\Shared\*.cs"/>
+    <Compile Include="..\Shared\*.cs" />
   </ItemGroup>
 
 </Project>
