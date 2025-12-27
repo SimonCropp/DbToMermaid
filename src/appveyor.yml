@@ -9,7 +9,7 @@ build_script:
     ./dotnet-install.ps1 -JSonFile src/global.json -Architecture x64 -InstallDir 'C:\Program Files\dotnet'
 - dotnet build src --configuration Release --nologo
 - dotnet run --project src/EfToMermaid.Tests --configuration Release --no-build
-- dotnet test src --configuration Release --no-build --no-restore
+- dotnet run --project src/SqlServerToMermaid.Tests --configuration Release --no-build
 test: off
 artifacts:
 - path: nugets\*.nupkg
