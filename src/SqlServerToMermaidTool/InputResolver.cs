@@ -1,15 +1,6 @@
-namespace SqlServerToMermaidTool;
-
-public enum InputType
-{
-    ConnectionString,
-    FilePath,
-    RawSql
-}
-
 public static class InputResolver
 {
-    static readonly string[] ConnectionStringKeywords =
+    static readonly string[] connectionStringKeywords =
     [
         "Server=",
         "Data Source=",
@@ -40,6 +31,6 @@ public static class InputResolver
     }
 
     static bool LooksLikeConnectionString(string input) =>
-        ConnectionStringKeywords.Any(keyword =>
+        connectionStringKeywords.Any(keyword =>
             input.Contains(keyword, StringComparison.OrdinalIgnoreCase));
 }

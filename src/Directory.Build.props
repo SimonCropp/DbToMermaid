@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <LangVersion>14</LangVersion>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <PackageTags>SqlServer, Mermaid diagrams</PackageTags>

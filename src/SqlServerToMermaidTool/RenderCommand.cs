@@ -1,25 +1,22 @@
-using CliFx;
-using CliFx.Attributes;
-using CliFx.Exceptions;
-using CliFx.Infrastructure;
-using DbToMermaid;
-using Microsoft.Data.SqlClient;
-
-namespace SqlServerToMermaidTool;
-
 [Command(Description = "Generate Mermaid ER diagram from SQL Server database or script")]
 public class RenderCommand : ICommand
 {
-    [CommandParameter(0, Name = "input", Description =
-        "SQL connection string, path to .sql file, or raw SQL script")]
+    [CommandParameter(
+        0,
+        Name = "input",
+        Description = "SQL connection string, path to .sql file, or raw SQL script")]
     public required string Input { get; init; }
 
-    [CommandOption("output", 'o', Description =
-        "Output file path (.md or .mmd). Default: schema.md")]
+    [CommandOption(
+        "output",
+        'o',
+        Description = "Output file path (.md or .mmd). Default: schema.md")]
     public string Output { get; init; } = "schema.md";
 
-    [CommandOption("newline", 'n', Description =
-        "Custom newline sequence (e.g., \\n or \\r\\n)")]
+    [CommandOption(
+        "newline",
+        'n',
+        Description = @"Custom newline sequence (e.g., \n or \r\n)")]
     public string? NewLine { get; init; }
 
     public async ValueTask ExecuteAsync(IConsole console)
