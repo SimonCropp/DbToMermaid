@@ -1,0 +1,9 @@
+﻿{
+  Type: CommandException,
+  ExitCode: 1,
+  ShowHelp: false,
+  Message: Invalid output extension '.txt'. Only .md and .mmd are supported.,
+  StackTrace:
+at RenderCommand.ValidateAndGetOutputFormat(String path)
+at RenderCommand.ExecuteAsync(IConsole console)
+}

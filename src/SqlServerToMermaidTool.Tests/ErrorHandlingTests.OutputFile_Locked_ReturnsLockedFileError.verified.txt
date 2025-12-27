@@ -1,0 +1,7 @@
+﻿{
+  Type: CommandException,
+  ExitCode: 1,
+  ShowHelp: false,
+  Message: Output file is locked by another process: {TempFile},
+  StackTrace: at RenderCommand.ExecuteAsync(IConsole console)
+}
