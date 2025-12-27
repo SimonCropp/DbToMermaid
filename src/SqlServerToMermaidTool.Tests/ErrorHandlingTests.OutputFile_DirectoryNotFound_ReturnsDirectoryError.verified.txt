@@ -1,0 +1,7 @@
+﻿{
+  Type: CommandException,
+  ExitCode: 1,
+  ShowHelp: false,
+  Message: Output directory does not exist: {TempPath}Guid_1\nonexistent,
+  StackTrace: at RenderCommand.ExecuteAsync(IConsole console)
+}

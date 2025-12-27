@@ -23,29 +23,68 @@ public class RenderCommand : ICommand
     {
         var useMarkdown = ValidateAndGetOutputFormat(Output);
         var inputType = InputResolver.Resolve(Input);
-
         var fullPath = Path.GetFullPath(Output);
-        await using var writer = new StreamWriter(fullPath);
 
-        if (NewLine is not null)
+        try
         {
-            writer.NewLine = ParseNewLine(NewLine);
+            await using var writer = new StreamWriter(fullPath);
+
+            if (NewLine is not null)
+            {
+                writer.NewLine = ParseNewLine(NewLine);
+            }
+
+            var task = (inputType, useMarkdown) switch
+            {
+                (InputType.ConnectionString, true) => RenderConnectionMarkdown(writer),
+                (InputType.ConnectionString, false) => RenderConnectionRaw(writer),
+                (InputType.FilePath, true) => RenderFileMarkdown(writer),
+                (InputType.FilePath, false) => RenderFileRaw(writer),
+                (InputType.RawSql, true) => RenderScriptMarkdown(writer, Input),
+                (InputType.RawSql, false) => RenderScriptRaw(writer, Input),
+                _ => throw new InvalidOperationException("Unexpected input/output combination")
+            };
+            await task;
+
+            await console.Output.WriteLineAsync($"Generated: {fullPath}");
         }
-
-        var task = (inputType, useMarkdown) switch
+        catch (SqlException ex) when (IsTimeoutError(ex))
         {
-            (InputType.ConnectionString, true) => RenderConnectionMarkdown(writer),
-            (InputType.ConnectionString, false) => RenderConnectionRaw(writer),
-            (InputType.FilePath, true) => RenderFileMarkdown(writer),
-            (InputType.FilePath, false) => RenderFileRaw(writer),
-            (InputType.RawSql, true) => RenderScriptMarkdown(writer, Input),
-            (InputType.RawSql, false) => RenderScriptRaw(writer, Input),
-            _ => throw new InvalidOperationException("Unexpected input/output combination")
-        };
-        await task;
-
-        await console.Output.WriteLineAsync($"Generated: {fullPath}");
+            throw new CommandException($"Database operation timed out: {ex.Message}");
+        }
+        catch (SqlException ex)
+        {
+            throw new CommandException($"Database connection failed: {ex.Message}");
+        }
+        catch (DirectoryNotFoundException)
+        {
+            var directory = Path.GetDirectoryName(fullPath);
+            throw new CommandException($"Output directory does not exist: {directory}");
+        }
+        catch (IOException ex) when (IsFileLocked(ex))
+        {
+            throw new CommandException($"Output file is locked by another process: {fullPath}");
+        }
+        catch (IOException ex)
+        {
+            throw new CommandException($"File I/O error: {ex.Message}");
+        }
+        catch (UnauthorizedAccessException)
+        {
+            throw new CommandException($"Permission denied writing to: {fullPath}");
+        }
+        catch (InvalidOperationException ex) when (ex.Message.StartsWith("SQL parse errors"))
+        {
+            throw new CommandException($"Invalid SQL schema:\n{ex.Message}");
+        }
     }
+
+    static bool IsTimeoutError(SqlException ex) =>
+        ex.Number == -2 || ex.Message.Contains("timeout", StringComparison.OrdinalIgnoreCase);
+
+    static bool IsFileLocked(IOException ex) =>
+        ex.HResult == unchecked((int)0x80070020) || // ERROR_SHARING_VIOLATION
+        ex.HResult == unchecked((int)0x80070021);   // ERROR_LOCK_VIOLATION
 
     static bool ValidateAndGetOutputFormat(string path)
     {
