@@ -1,6 +1,6 @@
 # <img src="/src/icon.png" height="30px"> DbToMermaid
 
-[![Build status](https://ci.appveyor.com/api/projects/status/5kll5dq7quvmisxa?svg=true)](https://ci.appveyor.com/project/SimonCropp/dbtomermaid)
+[![Build status](https://img.shields.io/appveyor/build/SimonCropp/dbtomermaid)](https://ci.appveyor.com/project/SimonCropp/dbtomermaid)
 [![NuGet Status](https://img.shields.io/nuget/v/SqlServerToMermaid.svg?label=SqlServerToMermaid)](https://www.nuget.org/packages/SqlServerToMermaid/)
 [![NuGet Status](https://img.shields.io/nuget/v/SqlServerToMermaidTool.svg?label=SqlServerToMermaidTool)](https://www.nuget.org/packages/SqlServerToMermaidTool/)
 [![NuGet Status](https://img.shields.io/nuget/v/EfToMermaid.svg?label=EfToMermaid)](https://www.nuget.org/packages/EfToMermaid/)
