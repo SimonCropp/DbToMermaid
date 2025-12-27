@@ -6,7 +6,6 @@
     <PackAsTool>true</PackAsTool>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <ToolCommandName>sql2mermaid</ToolCommandName>
-    <PackageId>SqlServerToMermaidTool</PackageId>
     <SignAssembly>false</SignAssembly>
     <Description>CLI tool to generate Mermaid ER diagrams from SQL Server databases or scripts.</Description>
   </PropertyGroup>
