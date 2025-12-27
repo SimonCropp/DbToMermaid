@@ -43,7 +43,9 @@ static class DiagramRender
             var tableId = ToMermaidId(table.Schema, table.Name);
             await writer.WriteLineAsync($"  {tableId} {{");
 
-            foreach (var column in table.Columns.OrderBy(_ => _.Ordinal))
+            foreach (var column in table.Columns
+                .OrderBy(_ => table.PrimaryKeys?.Contains(_.Name) != true)
+                .ThenBy(_ => _.Ordinal))
             {
                 await RenderColumn(writer, column, table, cancel);
             }
