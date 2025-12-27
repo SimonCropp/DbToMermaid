@@ -3,7 +3,7 @@ namespace DbToMermaid;
 /// <summary>
 /// Generates Mermaid ER diagrams from Entity Framework Core models.
 /// </summary>
-public sealed class EfToMermaid
+public static class EfToMermaid
 {
     /// <summary>
     /// Renders a Mermaid ER diagram as a Markdown code block from an Entity Framework Core model.

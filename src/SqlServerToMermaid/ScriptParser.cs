@@ -2,7 +2,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 static class ScriptParser
 {
-    public static Database Parse(string script, string databaseName = "Database")
+    public static Database Parse(string script)
     {
         var parser = new TSql160Parser(initialQuotedIdentifiers: false);
         using var reader = new StringReader(script);
@@ -39,7 +39,7 @@ static class ScriptParser
             .ThenBy(fk => fk.Name, StringComparer.Ordinal)
             .ToList();
 
-        return new(databaseName, tableList, fkList);
+        return new(tableList, fkList);
     }
 
     static void ProcessStatement(TSqlStatement statement, Dictionary<(string Schema, string Name), TableBuilder> tables, List<ForeignKey> foreignKeys)

@@ -3,7 +3,7 @@
 /// <summary>
 /// Generates Mermaid ER diagrams from SQL Server database schemas.
 /// </summary>
-public sealed class SqlServerToMermaid
+public static class SqlServerToMermaid
 {
     /// <summary>
     /// Renders a Mermaid ER diagram as a Markdown code block from a SQL Server database.
@@ -81,12 +81,11 @@ public sealed class SqlServerToMermaid
     /// Renders a Mermaid ER diagram as a Markdown code block from a SQL script string.
     /// </summary>
     /// <param name="script">The SQL script containing CREATE TABLE statements.</param>
-    /// <param name="databaseName">Optional name for the database in the diagram.</param>
     /// <param name="cancel">Optional cancellation token.</param>
     /// <returns>A Markdown string containing the Mermaid ER diagram.</returns>
-    public static Task<string> RenderMarkdownFromScript(string script, string databaseName = "Database", Cancel cancel = default)
+    public static Task<string> RenderMarkdownFromScript(string script, Cancel cancel = default)
     {
-        var database = ScriptParser.Parse(script, databaseName);
+        var database = ScriptParser.Parse(script);
         return DiagramRender.RenderMarkdown(database, cancel);
     }
 
@@ -94,12 +93,11 @@ public sealed class SqlServerToMermaid
     /// Renders a Mermaid ER diagram from a SQL script string.
     /// </summary>
     /// <param name="script">The SQL script containing CREATE TABLE statements.</param>
-    /// <param name="databaseName">Optional name for the database in the diagram.</param>
     /// <param name="cancel">Optional cancellation token.</param>
     /// <returns>A string containing the Mermaid ER diagram.</returns>
-    public static Task<string> RenderFromScript(string script, string databaseName = "Database", Cancel cancel = default)
+    public static Task<string> RenderFromScript(string script, Cancel cancel = default)
     {
-        var database = ScriptParser.Parse(script, databaseName);
+        var database = ScriptParser.Parse(script);
         return DiagramRender.Render(database, cancel);
     }
 
@@ -108,11 +106,10 @@ public sealed class SqlServerToMermaid
     /// </summary>
     /// <param name="script">The SQL script containing CREATE TABLE statements.</param>
     /// <param name="writer">The TextWriter to write the diagram to.</param>
-    /// <param name="databaseName">Optional name for the database in the diagram.</param>
     /// <param name="cancel">Optional cancellation token.</param>
-    public static Task RenderFromScript(string script, TextWriter writer, string databaseName = "Database", Cancel cancel = default)
+    public static Task RenderFromScript(string script, TextWriter writer, Cancel cancel = default)
     {
-        var database = ScriptParser.Parse(script, databaseName);
+        var database = ScriptParser.Parse(script);
         return DiagramRender.Render(writer, database, cancel);
     }
 
@@ -121,11 +118,10 @@ public sealed class SqlServerToMermaid
     /// </summary>
     /// <param name="script">The SQL script containing CREATE TABLE statements.</param>
     /// <param name="writer">The TextWriter to write the diagram to.</param>
-    /// <param name="databaseName">Optional name for the database in the diagram.</param>
     /// <param name="cancel">Optional cancellation token.</param>
-    public static Task RenderMarkdownFromScript(string script, TextWriter writer, string databaseName = "Database", Cancel cancel = default)
+    public static Task RenderMarkdownFromScript(string script, TextWriter writer, Cancel cancel = default)
     {
-        var database = ScriptParser.Parse(script, databaseName);
+        var database = ScriptParser.Parse(script);
         return DiagramRender.RenderMarkdown(writer, database, cancel);
     }
 
@@ -134,11 +130,10 @@ public sealed class SqlServerToMermaid
     /// </summary>
     /// <param name="script">The SQL script containing CREATE TABLE statements.</param>
     /// <param name="path">The file path to write the diagram to.</param>
-    /// <param name="databaseName">Optional name for the database in the diagram.</param>
     /// <param name="cancel">Optional cancellation token.</param>
-    public static Task RenderMarkdownToFileFromScript(string script, string path, string databaseName = "Database", Cancel cancel = default)
+    public static Task RenderMarkdownToFileFromScript(string script, string path, Cancel cancel = default)
     {
-        var database = ScriptParser.Parse(script, databaseName);
+        var database = ScriptParser.Parse(script);
         return DiagramRender.RenderMarkdownToFile(database, path, cancel);
     }
 
@@ -147,11 +142,10 @@ public sealed class SqlServerToMermaid
     /// </summary>
     /// <param name="script">The SQL script containing CREATE TABLE statements.</param>
     /// <param name="path">The file path to write the diagram to.</param>
-    /// <param name="databaseName">Optional name for the database in the diagram.</param>
     /// <param name="cancel">Optional cancellation token.</param>
-    public static Task RenderToFileFromScript(string script, string path, string databaseName = "Database", Cancel cancel = default)
+    public static Task RenderToFileFromScript(string script, string path, Cancel cancel = default)
     {
-        var database = ScriptParser.Parse(script, databaseName);
+        var database = ScriptParser.Parse(script);
         return DiagramRender.RenderToFile(database, path, cancel);
     }
 }

@@ -52,7 +52,7 @@ static class SchemaReader
             .ThenBy(_ => _.Name, StringComparer.Ordinal)
             .ToList();
 
-        return new(model.GetDefaultSchema() ?? "dbo", tables, foreignKeys);
+        return new(tables, foreignKeys);
     }
 
     private static Column BuildColumn(IProperty property, StoreObjectIdentifier storeObject)
