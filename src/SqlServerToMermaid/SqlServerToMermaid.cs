@@ -42,6 +42,18 @@ public sealed class SqlServerToMermaid
     }
 
     /// <summary>
+    /// Renders a Mermaid ER diagram as a Markdown code block from a SQL Server database to a TextWriter.
+    /// </summary>
+    /// <param name="connection">The SQL Server connection to read the schema from.</param>
+    /// <param name="writer">The TextWriter to write the diagram to.</param>
+    /// <param name="cancel">Optional cancellation token.</param>
+    public static async Task RenderMarkdown(SqlConnection connection, TextWriter writer, Cancel cancel = default)
+    {
+        var database = await SchemaReader.Read(connection, cancel);
+        await DiagramRender.RenderMarkdown(writer, database, cancel);
+    }
+
+    /// <summary>
     /// Renders a Mermaid ER diagram as a Markdown code block and writes it to a file.
     /// </summary>
     /// <param name="connection">The SQL Server connection to read the schema from.</param>
@@ -89,6 +101,32 @@ public sealed class SqlServerToMermaid
     {
         var database = ScriptParser.Parse(script, databaseName);
         return DiagramRender.Render(database, cancel);
+    }
+
+    /// <summary>
+    /// Renders a Mermaid ER diagram from a SQL script string to a TextWriter.
+    /// </summary>
+    /// <param name="script">The SQL script containing CREATE TABLE statements.</param>
+    /// <param name="writer">The TextWriter to write the diagram to.</param>
+    /// <param name="databaseName">Optional name for the database in the diagram.</param>
+    /// <param name="cancel">Optional cancellation token.</param>
+    public static Task RenderFromScript(string script, TextWriter writer, string databaseName = "Database", Cancel cancel = default)
+    {
+        var database = ScriptParser.Parse(script, databaseName);
+        return DiagramRender.Render(writer, database, cancel);
+    }
+
+    /// <summary>
+    /// Renders a Mermaid ER diagram as a Markdown code block from a SQL script string to a TextWriter.
+    /// </summary>
+    /// <param name="script">The SQL script containing CREATE TABLE statements.</param>
+    /// <param name="writer">The TextWriter to write the diagram to.</param>
+    /// <param name="databaseName">Optional name for the database in the diagram.</param>
+    /// <param name="cancel">Optional cancellation token.</param>
+    public static Task RenderMarkdownFromScript(string script, TextWriter writer, string databaseName = "Database", Cancel cancel = default)
+    {
+        var database = ScriptParser.Parse(script, databaseName);
+        return DiagramRender.RenderMarkdown(writer, database, cancel);
     }
 
     /// <summary>

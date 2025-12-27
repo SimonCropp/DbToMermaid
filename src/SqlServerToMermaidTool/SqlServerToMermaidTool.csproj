@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>sql2mermaid</ToolCommandName>
+    <PackageId>SqlServerToMermaidTool</PackageId>
+    <Description>CLI tool to generate Mermaid ER diagrams from SQL Server databases or scripts.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CliFx" />
+    <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="ProjectDefaults" PrivateAssets="true" />
+    <ProjectReference Include="..\SqlServerToMermaid\SqlServerToMermaid.csproj" />
+  </ItemGroup>
+
+</Project>

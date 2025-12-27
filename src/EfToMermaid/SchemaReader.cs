@@ -61,7 +61,7 @@ static class SchemaReader
         var storeType = property.GetColumnType(storeObject);
         var type = FormatType(storeType, property.ClrType);
         var isComputed = property.GetComputedColumnSql(storeObject) is not null;
-        return new Column(0, name, type, property.IsNullable, isComputed);
+        return new(0, name, type, property.IsNullable, isComputed);
     }
 
     static string FormatType(string? storeType, Type clrType)

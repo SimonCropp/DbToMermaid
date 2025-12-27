@@ -2,6 +2,7 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/5kll5dq7quvmisxa/branch/main?svg=true)](https://ci.appveyor.com/project/SimonCropp/dbtomermaid)
 [![NuGet Status](https://img.shields.io/nuget/v/SqlServerToMermaid.svg?label=SqlServerToMermaid)](https://www.nuget.org/packages/SqlServerToMermaid/)
+[![NuGet Status](https://img.shields.io/nuget/v/SqlServerToMermaidTool.svg?label=SqlServerToMermaidTool)](https://www.nuget.org/packages/SqlServerToMermaidTool/)
 [![NuGet Status](https://img.shields.io/nuget/v/EfToMermaid.svg?label=EfToMermaid)](https://www.nuget.org/packages/EfToMermaid/)
 
 Generate [Mermaid ER diagrams](https://mermaid.js.org/syntax/entityRelationshipDiagram.html) from SQL Server databases or Entity Framework Core models.
@@ -10,6 +11,7 @@ Generate [Mermaid ER diagrams](https://mermaid.js.org/syntax/entityRelationshipD
 ## NuGet
 
  * SqlServerToMermaid: https://nuget.org/packages/SqlServerToMermaid/
+ * SqlServerToMermaidTool: https://nuget.org/packages/SqlServerToMermaidTool/
  * EfToMermaid: https://nuget.org/packages/EfToMermaid/
 
 
@@ -190,6 +192,46 @@ var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
 ```
 <sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L23-L34' title='Snippet source file'>snippet source</a> | <a href='#snippet-SqlServerScriptUsage' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+
+## SqlServerToMermaidTool (CLI)
+
+Command-line tool for generating Mermaid ER diagrams from SQL Server databases or scripts.
+
+### Installation
+
+```bash
+dotnet tool install -g SqlServerToMermaidTool
+```
+
+### Usage
+
+**From a SQL Server database:**
+```bash
+sql2mermaid "Server=localhost;Database=MyDb;Integrated Security=true" -o schema.md
+```
+
+**From a SQL script file:**
+```bash
+sql2mermaid path/to/schema.sql -o diagram.mmd
+```
+
+**From inline SQL:**
+```bash
+sql2mermaid "CREATE TABLE Users (Id INT PRIMARY KEY, Name NVARCHAR(100))" -o users.md
+```
+
+### Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|---------|
+| `--output` | `-o` | Output file path (.md or .mmd) | `schema.md` |
+| `--newline` | `-n` | Custom newline sequence (e.g., `\n` or `\r\n`) | System default |
+
+### Output Formats
+
+- `.md` - Markdown with mermaid code block (uses `RenderMarkdown`)
+- `.mmd` - Raw mermaid diagram (uses `Render`)
 
 
 ## EfToMermaid
