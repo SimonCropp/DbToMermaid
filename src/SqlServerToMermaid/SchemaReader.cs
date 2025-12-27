@@ -62,7 +62,7 @@ static class SchemaReader
             await connection.CloseAsync();
         }
 
-        return new(db.Name, tables, foreignKeys);
+        return new(tables, foreignKeys);
     }
 
     static HashSet<string>? GetPrimaryKeys(Microsoft.SqlServer.Management.Smo.Table table)

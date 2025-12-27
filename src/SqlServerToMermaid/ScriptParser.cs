@@ -2,7 +2,7 @@ using Microsoft.SqlServer.TransactSql.ScriptDom;
 
 static class ScriptParser
 {
-    public static Database Parse(string script, string databaseName = "Database")
+    public static Database Parse(string script)
     {
         var parser = new TSql160Parser(initialQuotedIdentifiers: false);
         using var reader = new StringReader(script);
@@ -39,7 +39,7 @@ static class ScriptParser
             .ThenBy(fk => fk.Name, StringComparer.Ordinal)
             .ToList();
 
-        return new Database(databaseName, tableList, fkList);
+        return new(tableList, fkList);
     }
 
     static void ProcessStatement(TSqlStatement statement, Dictionary<(string Schema, string Name), TableBuilder> tables, List<ForeignKey> foreignKeys)
@@ -85,7 +85,7 @@ static class ScriptParser
 
         if (!tables.TryGetValue(key, out var builder))
         {
-            builder = new TableBuilder(schemaName, tableName);
+            builder = new(schemaName, tableName);
             tables[key] = builder;
         }
 
@@ -115,7 +115,7 @@ static class ScriptParser
                 var fkName = fk.ConstraintIdentifier?.Value ?? $"FK_{tableName}_{fk.ReferenceTableName.BaseIdentifier.Value}";
                 var refSchema = fk.ReferenceTableName.SchemaIdentifier?.Value ?? "dbo";
                 var refTable = fk.ReferenceTableName.BaseIdentifier.Value;
-                foreignKeys.Add(new ForeignKey(fkName, schemaName, tableName, refSchema, refTable));
+                foreignKeys.Add(new(fkName, schemaName, tableName, refSchema, refTable));
                 break;
         }
     }
@@ -127,7 +127,7 @@ static class ScriptParser
         var isNullable = IsNullable(columnDef);
         var isComputed = columnDef.ComputedColumnExpression is not null;
 
-        return new Column(ordinal, columnName, dataType, isNullable, isComputed);
+        return new(ordinal, columnName, dataType, isNullable, isComputed);
     }
 
     static string FormatDataType(DataTypeReference? dataType)

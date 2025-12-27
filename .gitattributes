@@ -7,6 +7,7 @@
 *.nupkg binary
 
 *.verified.md text eol=lf working-tree-encoding=UTF-8
+*.verified.mmd text eol=lf working-tree-encoding=UTF-8
 
 .editorconfig text eol=lf working-tree-encoding=UTF-8
 *.sln.DotSettings text eol=lf working-tree-encoding=UTF-8

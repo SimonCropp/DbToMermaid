@@ -11,4 +11,6 @@
   <Project Path="SqlServerToMermaid/SqlServerToMermaid.csproj" />
   <Project Path="EfToMermaid/EfToMermaid.csproj" />
   <Project Path="EfToMermaid.Tests/EfToMermaid.Tests.csproj" />
+  <Project Path="SqlServerToMermaidTool/SqlServerToMermaidTool.csproj" />
+  <Project Path="SqlServerToMermaidTool.Tests/SqlServerToMermaidTool.Tests.csproj" />
 </Solution>

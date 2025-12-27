@@ -1,5 +1,6 @@
 <Project>
   <ItemGroup>
+    <PackageVersion Include="CliFx" Version="2.3.5" />
     <PackageVersion Include="LocalDb" Version="22.0.0" />
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="27.0.2" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="6.1.3" />

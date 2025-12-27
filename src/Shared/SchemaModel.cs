@@ -1,4 +1,4 @@
-sealed record Database(string Name, IReadOnlyList<Table> Tables, IReadOnlyList<ForeignKey> ForeignKeys);
+sealed record Database(IReadOnlyList<Table> Tables, IReadOnlyList<ForeignKey> ForeignKeys);
 
 sealed record Table(string Schema, string Name, IReadOnlyList<Column> Columns, IReadOnlySet<string>? PrimaryKeys);
 

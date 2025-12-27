@@ -52,7 +52,7 @@ static class SchemaReader
             .ThenBy(_ => _.Name, StringComparer.Ordinal)
             .ToList();
 
-        return new(model.GetDefaultSchema() ?? "dbo", tables, foreignKeys);
+        return new(tables, foreignKeys);
     }
 
     private static Column BuildColumn(IProperty property, StoreObjectIdentifier storeObject)
@@ -61,7 +61,7 @@ static class SchemaReader
         var storeType = property.GetColumnType(storeObject);
         var type = FormatType(storeType, property.ClrType);
         var isComputed = property.GetComputedColumnSql(storeObject) is not null;
-        return new Column(0, name, type, property.IsNullable, isComputed);
+        return new(0, name, type, property.IsNullable, isComputed);
     }
 
     static string FormatType(string? storeType, Type clrType)
