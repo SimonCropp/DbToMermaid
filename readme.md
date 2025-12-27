@@ -225,7 +225,7 @@ sql2mermaid "CREATE TABLE Users (Id INT PRIMARY KEY, Name NVARCHAR(100))" -o use
 
 | Option | Short | Description | Default |
 |--------|-------|-------------|---------|
-| `--output` | `-o` | Output file path (.md or .mmd) | `schema.md` |
+| `--output` | `-o` | Output file path (`.md` or `.mmd`) | `schema.md` |
 | `--newline` | `-n` | Custom newline sequence (e.g., `\n` or `\r\n`) | System default |
 
 ### Output Formats
