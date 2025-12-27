@@ -1,4 +1,4 @@
-class SampleDbContext(DbContextOptions<SampleDbContext> options) :
+﻿class WithSchemaDbContext(DbContextOptions<WithSchemaDbContext> options) :
     DbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -6,7 +6,7 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
         modelBuilder
             .Entity<Customer>(builder =>
             {
-                builder.ToTable("Customers");
+                builder.ToTable("Customers", "sales");
                 builder.HasKey(_ => _.CustomerId);
                 builder.Property(_ => _.CustomerId)
                     .HasColumnType("int").IsRequired();
@@ -18,7 +18,7 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
         modelBuilder
             .Entity<Order>(builder =>
             {
-                builder.ToTable("Orders");
+                builder.ToTable("Orders", "sales");
                 builder.HasKey(_ => _.OrderId);
                 builder.Property(_ => _.OrderId)
                     .HasColumnType("int")
@@ -33,18 +33,4 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
                     .HasConstraintName("FK_Orders_Customers");
             });
     }
-}
-
-sealed class Customer
-{
-    public int CustomerId { get; set; }
-    public string Name { get; set; } = "";
-    public List<Order> Orders { get; set; } = [];
-}
-
-sealed class Order
-{
-    public int OrderId { get; set; }
-    public int CustomerId { get; set; }
-    public Customer Customer { get; set; } = null!;
 }

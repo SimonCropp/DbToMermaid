@@ -1,13 +1,13 @@
 
 ```mermaid
 erDiagram
-  Customers {
+  sales_Customers {
     int CustomerId(pk) "not null"
     nvarchar Name "not null"
   }
-  Orders {
+  sales_Orders {
     int OrderId(pk) "not null"
     int CustomerId "not null"
   }
-  Customers ||--o{ Orders : "FK_Orders_Customers"
+  sales_Customers ||--o{ sales_Orders : "FK_Orders_Customers"
 ```

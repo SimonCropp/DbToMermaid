@@ -254,7 +254,7 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
         modelBuilder
             .Entity<Customer>(builder =>
             {
-                builder.ToTable("Customers", "sales");
+                builder.ToTable("Customers");
                 builder.HasKey(_ => _.CustomerId);
                 builder.Property(_ => _.CustomerId)
                     .HasColumnType("int").IsRequired();
@@ -266,7 +266,7 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
         modelBuilder
             .Entity<Order>(builder =>
             {
-                builder.ToTable("Orders", "sales");
+                builder.ToTable("Orders");
                 builder.HasKey(_ => _.OrderId);
                 builder.Property(_ => _.OrderId)
                     .HasColumnType("int")
@@ -307,6 +307,7 @@ sealed class Order
 <a id='snippet-EfUsage'></a>
 ```cs
 var options = new DbContextOptionsBuilder<SampleDbContext>()
+    // required to get an instace of a model without a running DB intsance
     .UseSqlServer("Fake")
     .Options;
 
@@ -314,7 +315,7 @@ await using var context = new SampleDbContext(options);
 
 var markdown = await EfToMermaid.RenderMarkdown(context.Model);
 ```
-<sup><a href='/src/EfToMermaid.Tests/Tests.cs#L6-L16' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfUsage' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/EfToMermaid.Tests/Tests.cs#L6-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfUsage' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -323,15 +324,15 @@ var markdown = await EfToMermaid.RenderMarkdown(context.Model);
 <!-- include: EfToMermaid.Tests/Tests.RenderMarkdown.verified.md -->
 ```mermaid
 erDiagram
-  sales_Customers {
+  Customers {
     int CustomerId(pk) "not null"
     nvarchar Name "not null"
   }
-  sales_Orders {
+  Orders {
     int OrderId(pk) "not null"
     int CustomerId "not null"
   }
-  sales_Customers ||--o{ sales_Orders : "FK_Orders_Customers"
+  Customers ||--o{ Orders : "FK_Orders_Customers"
 ```
 <!-- endInclude -->
 
