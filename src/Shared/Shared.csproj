@@ -1,10 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <ResolveAssemblyReferencesSilent>true</ResolveAssemblyReferencesSilent>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ProjectDefaults" PrivateAssets="true" />
   </ItemGroup>
+
 </Project>
