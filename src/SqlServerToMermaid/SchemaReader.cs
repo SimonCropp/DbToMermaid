@@ -21,6 +21,7 @@ static class SchemaReader
             .Select(table =>
             {
                 var primaryKeys = GetPrimaryKeys(table);
+                var tableComment = table.ExtendedProperties["MS_Description"]?.Value?.ToString();
 
                 var columns = table.Columns
                     .OrderBy(_ => _.ID)
@@ -29,10 +30,11 @@ static class SchemaReader
                         Name: _.Name,
                         Type: FormatType(_.DataType),
                         IsNullable: _.Nullable,
-                        Computed: _.Computed))
+                        Computed: _.Computed,
+                        Comment: _.ExtendedProperties["MS_Description"]?.Value?.ToString()))
                     .ToList();
 
-                return new Table(table.Schema, table.Name, columns, primaryKeys);
+                return new Table(table.Schema, table.Name, columns, primaryKeys, tableComment);
             })
             .ToList();
 

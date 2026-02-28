@@ -16,6 +16,7 @@ static class SchemaReader
             var schema = group.Key.Schema ?? "dbo";
             var tableName = group.Key.Table;
             var storeObject = StoreObjectIdentifier.Table(tableName, group.Key.Schema);
+            var tableComment = group.First().FindAnnotation("Relational:Comment")?.Value?.ToString();
 
             var properties = group
                 .SelectMany(_ => _.GetProperties())
@@ -30,7 +31,7 @@ static class SchemaReader
                 .Select(_ => _.GetColumnName(storeObject) ?? _.Name)
                 .ToHashSet(StringComparer.Ordinal);
 
-            tables.Add(new(schema, tableName, properties, pkCols));
+            tables.Add(new(schema, tableName, properties, pkCols, tableComment));
         }
 
         var foreignKeys = model.GetEntityTypes()
@@ -61,7 +62,8 @@ static class SchemaReader
         var storeType = property.GetColumnType(storeObject);
         var type = FormatType(storeType, property.ClrType);
         var isComputed = property.GetComputedColumnSql(storeObject) is not null;
-        return new(0, name, type, property.IsNullable, isComputed);
+        var comment = property.FindAnnotation("Relational:Comment")?.Value?.ToString();
+        return new(0, name, type, property.IsNullable, isComputed, comment);
     }
 
     static string FormatType(string? storeType, Type clrType)

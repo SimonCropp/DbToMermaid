@@ -41,6 +41,10 @@ static class DiagramRender
         {
             cancel.ThrowIfCancellationRequested();
             var tableId = ToMermaidId(table.Schema, table.Name);
+            if (table.Comment is not null)
+            {
+                await writer.WriteLineAsync($"  %% {table.Comment}");
+            }
             await writer.WriteLineAsync($"  {tableId} {{");
 
             foreach (var column in table.Columns
@@ -83,6 +87,11 @@ static class DiagramRender
         if (column.Computed)
         {
             await writer.WriteAsync(", computed");
+        }
+        if (column.Comment is not null)
+        {
+            await writer.WriteAsync(": ");
+            await writer.WriteAsync(column.Comment.Replace("\"", "'"));
         }
         await writer.WriteAsync('"');
         await writer.WriteLineAsync();

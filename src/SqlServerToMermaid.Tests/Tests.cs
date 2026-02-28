@@ -217,6 +217,87 @@ public class Tests
     }
 
     [Test]
+    public async Task RenderMarkdownWithComments()
+    {
+        await using var database = await instance.Build();
+        await using (var command = database.Connection.CreateCommand())
+        {
+            command.CommandText =
+                """
+                CREATE TABLE Customers
+                (
+                    CustomerId  INT IDENTITY(1,1) PRIMARY KEY,
+                    Name        NVARCHAR(100)   NOT NULL,
+                    Email       VARCHAR(255)    NULL
+                );
+
+                EXEC sp_addextendedproperty
+                    @name = N'MS_Description',
+                    @value = N'Core customer information',
+                    @level0type = N'SCHEMA', @level0name = N'dbo',
+                    @level1type = N'TABLE',  @level1name = N'Customers';
+
+                EXEC sp_addextendedproperty
+                    @name = N'MS_Description',
+                    @value = N'Auto-generated identifier',
+                    @level0type = N'SCHEMA', @level0name = N'dbo',
+                    @level1type = N'TABLE',  @level1name = N'Customers',
+                    @level2type = N'COLUMN', @level2name = N'CustomerId';
+
+                EXEC sp_addextendedproperty
+                    @name = N'MS_Description',
+                    @value = N'Customer full name',
+                    @level0type = N'SCHEMA', @level0name = N'dbo',
+                    @level1type = N'TABLE',  @level1name = N'Customers',
+                    @level2type = N'COLUMN', @level2name = N'Name';
+                """;
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var markdown = await SqlServerToMermaid.RenderMarkdown(database.Connection);
+
+        await Verify(markdown, extension: "md")
+            .AddScrubber(_ => _.Insert(0, '\n'));
+    }
+
+    [Test]
+    public async Task RenderMarkdownFromScriptWithComments()
+    {
+        var script = """
+            CREATE TABLE Customers
+            (
+                CustomerId  INT PRIMARY KEY,
+                Name        NVARCHAR(100)   NOT NULL,
+                Email       VARCHAR(255)    NULL
+            );
+
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description',
+                @value = N'Core customer information',
+                @level0type = N'SCHEMA', @level0name = N'dbo',
+                @level1type = N'TABLE',  @level1name = N'Customers';
+
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description',
+                @value = N'Auto-generated identifier',
+                @level0type = N'SCHEMA', @level0name = N'dbo',
+                @level1type = N'TABLE',  @level1name = N'Customers',
+                @level2type = N'COLUMN', @level2name = N'CustomerId';
+
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description',
+                @value = N'Customer full name',
+                @level0type = N'SCHEMA', @level0name = N'dbo',
+                @level1type = N'TABLE',  @level1name = N'Customers',
+                @level2type = N'COLUMN', @level2name = N'Name';
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
     public async Task RenderMarkdownFromScript()
     {
         var script = """

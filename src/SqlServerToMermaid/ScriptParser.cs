@@ -52,6 +52,9 @@ static class ScriptParser
             case AlterTableAddTableElementStatement alterAdd:
                 ProcessAlterTableAdd(alterAdd, tables, foreignKeys);
                 break;
+            case ExecuteStatement exec:
+                ProcessExecute(exec, tables);
+                break;
         }
     }
 
@@ -120,6 +123,97 @@ static class ScriptParser
         }
     }
 
+    static void ProcessExecute(ExecuteStatement exec, Dictionary<(string Schema, string Name), TableBuilder> tables)
+    {
+        var spec = exec.ExecuteSpecification;
+        if (spec.ExecutableEntity is not ExecutableProcedureReference procRef)
+        {
+            return;
+        }
+
+        var procName = procRef.ProcedureReference.ProcedureReference.Name;
+        var name = procName.BaseIdentifier.Value;
+        if (!name.Equals("sp_addextendedproperty", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        var parameters = spec.ExecutableEntity is ExecutableProcedureReference epr
+            ? epr.Parameters
+            : [];
+
+        string? propName = null, propValue = null, level1Type = null, level1Name = null, level2Type = null, level2Name = null;
+
+        foreach (var param in parameters)
+        {
+            var paramName = param.Variable?.Name?.ToLowerInvariant();
+            var paramValue = GetLiteralValue(param.ParameterValue);
+
+            switch (paramName)
+            {
+                case "@name":
+                    propName = paramValue;
+                    break;
+                case "@value":
+                    propValue = paramValue;
+                    break;
+                case "@level1type":
+                    level1Type = paramValue;
+                    break;
+                case "@level1name":
+                    level1Name = paramValue;
+                    break;
+                case "@level2type":
+                    level2Type = paramValue;
+                    break;
+                case "@level2name":
+                    level2Name = paramValue;
+                    break;
+            }
+        }
+
+        if (propName is null ||
+            !propName.Equals("MS_Description", StringComparison.OrdinalIgnoreCase) ||
+            propValue is null ||
+            level1Type is null ||
+            !level1Type.Equals("TABLE", StringComparison.OrdinalIgnoreCase) ||
+            level1Name is null)
+        {
+            return;
+        }
+
+        // Find table — try with dbo default schema
+        var key = ("dbo", level1Name);
+        if (!tables.TryGetValue(key, out var builder))
+        {
+            // Try all schemas
+            builder = tables.Values.FirstOrDefault(t => t.Name.Equals(level1Name, StringComparison.OrdinalIgnoreCase));
+            if (builder is null)
+            {
+                return;
+            }
+        }
+
+        if (level2Type is not null &&
+            level2Type.Equals("COLUMN", StringComparison.OrdinalIgnoreCase) &&
+            level2Name is not null)
+        {
+            builder.ColumnComments[level2Name] = propValue;
+        }
+        else
+        {
+            builder.Comment = propValue;
+        }
+    }
+
+    static string? GetLiteralValue(ScalarExpression? expression) =>
+        expression switch
+        {
+            StringLiteral str => str.Value,
+            IntegerLiteral intLit => intLit.Value,
+            _ => null
+        };
+
     static Column BuildColumn(ColumnDefinition columnDef, int ordinal)
     {
         var columnName = columnDef.ColumnIdentifier.Value;
@@ -175,7 +269,17 @@ static class ScriptParser
         public string Name { get; } = name;
         public List<Column> Columns { get; } = [];
         public HashSet<string> PrimaryKeys { get; } = new(StringComparer.OrdinalIgnoreCase);
+        public string? Comment { get; set; }
+        public Dictionary<string, string> ColumnComments { get; } = new(StringComparer.OrdinalIgnoreCase);
 
-        public Table Build() => new(Schema, Name, Columns, PrimaryKeys.Count > 0 ? PrimaryKeys : null);
+        public Table Build()
+        {
+            var columns = Columns.Select(c =>
+                ColumnComments.TryGetValue(c.Name, out var comment)
+                    ? c with { Comment = comment }
+                    : c
+            ).ToList();
+            return new(Schema, Name, columns, PrimaryKeys.Count > 0 ? PrimaryKeys : null, Comment);
+        }
     }
 }

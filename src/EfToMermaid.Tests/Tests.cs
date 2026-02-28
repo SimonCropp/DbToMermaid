@@ -21,6 +21,22 @@ public class Tests
     }
 
     [Test]
+    public async Task WithComments()
+    {
+        var options = new DbContextOptionsBuilder<WithCommentsDbContext>()
+            .UseSqlServer("Fake")
+            .Options;
+
+        await using var context = new WithCommentsDbContext(options);
+
+        var model = context.GetService<Microsoft.EntityFrameworkCore.Metadata.IDesignTimeModel>().Model;
+        var markdown = await EfToMermaid.RenderMarkdown(model);
+
+        await Verify(markdown, extension: "md")
+            .AddScrubber(_ => _.Insert(0, '\n'));
+    }
+
+    [Test]
     public async Task WithSchema()
     {
         var options = new DbContextOptionsBuilder<WithSchemaDbContext>()
