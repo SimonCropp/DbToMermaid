@@ -4,10 +4,6 @@ erDiagram
   Customers["**Customers**: Core customer information"] {
     int CustomerId PK "Auto-generated identifier"
     nvarchar Name "Customer full name"
+    varchar(nullable) Email
   }
-  Orders["**Orders**: Customer orders"] {
-    int OrderId PK "Auto-generated identifier"
-    int CustomerId
-  }
-  Customers ||--o{ Orders : "FK_Orders_Customers"
 ```

@@ -1,13 +1,13 @@
 ```mermaid
 erDiagram
   Company {
-    int Id(pk) "not null"
-    nvarchar Name "not null"
+    int Id PK
+    nvarchar Name
   }
   Employee {
-    int Id(pk) "not null"
-    nvarchar FirstName "not null"
-    int CompanyId "not null"
+    int Id PK
+    nvarchar FirstName
+    int CompanyId
   }
   Company ||--o{ Employee : "FK_Employee_Company"
 ```

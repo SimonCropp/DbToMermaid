@@ -92,76 +92,76 @@ var markdown = await SqlServerToMermaid.RenderMarkdown(sqlConnection);
 ```mermaid
 erDiagram
   Company {
-    int Id(pk) "not null"
-    nvarchar Name "not null"
-    varchar TaxNumber "null"
-    varchar Phone "null"
-    varchar Email "null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+    int Id PK
+    nvarchar Name
+    varchar(nullable) TaxNumber
+    varchar(nullable) Phone
+    varchar(nullable) Email
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
   Customer {
-    int Id(pk) "not null"
-    nvarchar FirstName "not null"
-    nvarchar LastName "not null"
-    varchar Email "not null"
-    varchar Phone "null"
-    int CompanyId "null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+    int Id PK
+    nvarchar FirstName
+    nvarchar LastName
+    varchar Email
+    varchar(nullable) Phone
+    int(nullable) CompanyId
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
   Employee {
-    int Id(pk) "not null"
-    nvarchar FirstName "not null"
-    nvarchar LastName "not null"
-    varchar Email "not null"
-    varchar Phone "null"
-    date HireDate "not null"
-    int CompanyId "not null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
-    int ManagerId "null"
+    int Id PK
+    nvarchar FirstName
+    nvarchar LastName
+    varchar Email
+    varchar(nullable) Phone
+    date HireDate
+    int CompanyId
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
+    int(nullable) ManagerId
   }
   Manager {
-    int Id(pk) "not null"
-    int EmployeeId "not null"
-    nvarchar Department "not null"
-    tinyint Level "not null"
-    date StartDate "not null"
-    date EndDate "null"
+    int Id PK
+    int EmployeeId
+    nvarchar Department
+    tinyint Level
+    date StartDate
+    date(nullable) EndDate
   }
   Order {
-    int Id(pk) "not null"
-    varchar OrderNumber "not null"
-    int CustomerId "not null"
-    datetime2 OrderDate "not null"
-    varchar Status "not null"
-    decimal SubTotal "not null"
-    decimal Tax "not null"
-    decimal Total "not null"
-    nvarchar Notes "null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+    int Id PK
+    varchar OrderNumber
+    int CustomerId
+    datetime2 OrderDate
+    varchar Status
+    decimal SubTotal
+    decimal Tax
+    decimal Total
+    nvarchar(nullable) Notes
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
   OrderItem {
-    int Id(pk) "not null"
-    int OrderId "not null"
-    int ProductId "not null"
-    int Quantity "not null"
-    decimal UnitPrice "not null"
-    decimal Discount "not null"
-    decimal LineTotal "null, computed"
+    int Id PK
+    int OrderId
+    int ProductId
+    int Quantity
+    decimal UnitPrice
+    decimal Discount
+    decimal(nullable) LineTotal "computed"
   }
   Product {
-    int Id(pk) "not null"
-    varchar Sku "not null"
-    nvarchar Name "not null"
-    nvarchar Description "null"
-    decimal UnitPrice "not null"
-    int StockQty "not null"
-    bit IsActive "not null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+    int Id PK
+    varchar Sku
+    nvarchar Name
+    nvarchar(nullable) Description
+    decimal UnitPrice
+    int StockQty
+    bit IsActive
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
   Company ||--o{ Customer : "FK_Customer_Company"
   Company ||--o{ Employee : "FK_Employee_Company"
@@ -297,6 +297,55 @@ sealed class Order
     public Customer Customer { get; set; } = null!;
 }
 
+sealed class NullableCustomer
+{
+    public int CustomerId { get; set; }
+    public string? Name { get; set; }
+    public List<NullableOrder> Orders { get; set; } = [];
+}
+
+sealed class NullableOrder
+{
+    public int OrderId { get; set; }
+    public int? CustomerId { get; set; }
+    public NullableCustomer? Customer { get; set; }
+}
+
+class WithNullableDbContext(DbContextOptions<WithNullableDbContext> options) :
+    DbContext(options)
+{
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder
+            .Entity<NullableCustomer>(builder =>
+            {
+                builder.ToTable("Customers");
+                builder.HasKey(_ => _.CustomerId);
+                builder.Property(_ => _.CustomerId)
+                    .HasColumnType("int").IsRequired();
+                builder.Property(_ => _.Name)
+                    .HasColumnType("nvarchar(50)");
+            });
+
+        modelBuilder
+            .Entity<NullableOrder>(builder =>
+            {
+                builder.ToTable("Orders");
+                builder.HasKey(_ => _.OrderId);
+                builder.Property(_ => _.OrderId)
+                    .HasColumnType("int")
+                    .IsRequired();
+                builder.Property(_ => _.CustomerId)
+                    .HasColumnType("int");
+
+                builder.HasOne(_ => _.Customer)
+                    .WithMany(_ => _.Orders)
+                    .HasForeignKey(_ => _.CustomerId)
+                    .HasConstraintName("FK_Orders_Customers");
+            });
+    }
+}
+
 class WithCommentsDbContext(DbContextOptions<WithCommentsDbContext> options) :
     DbContext(options)
 {
@@ -338,7 +387,7 @@ class WithCommentsDbContext(DbContextOptions<WithCommentsDbContext> options) :
     }
 }
 ```
-<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L91' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L140' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -366,12 +415,12 @@ var markdown = await EfToMermaid.RenderMarkdown(context.Model);
 ```mermaid
 erDiagram
   Customers {
-    int CustomerId(pk) "not null"
-    nvarchar Name "not null"
+    int CustomerId PK
+    nvarchar Name
   }
   Orders {
-    int OrderId(pk) "not null"
-    int CustomerId "not null"
+    int OrderId PK
+    int CustomerId
   }
   Customers ||--o{ Orders : "FK_Orders_Customers"
 ```

@@ -43,9 +43,12 @@ static class DiagramRender
             var tableId = ToMermaidId(table.Schema, table.Name);
             if (table.Comment is not null)
             {
-                await writer.WriteLineAsync($"  %% {table.Comment}");
+                await writer.WriteLineAsync($"  {tableId}[\"**{tableId}**: {table.Comment.Replace("\"", "'")}\"] {{");
             }
-            await writer.WriteLineAsync($"  {tableId} {{");
+            else
+            {
+                await writer.WriteLineAsync($"  {tableId} {{");
+            }
 
             foreach (var column in table.Columns
                 .OrderBy(_ => table.PrimaryKeys?.Contains(_.Name) != true)
