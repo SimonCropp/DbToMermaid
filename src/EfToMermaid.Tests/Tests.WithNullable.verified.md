@@ -3,11 +3,11 @@
 erDiagram
   Customers {
     int CustomerId PK
-    nvarchar Name
+    nvarchar(nullable) Name
   }
   Orders {
     int OrderId PK
-    int CustomerId
+    int(nullable) CustomerId
   }
   Customers ||--o{ Orders : "FK_Orders_Customers"
 ```

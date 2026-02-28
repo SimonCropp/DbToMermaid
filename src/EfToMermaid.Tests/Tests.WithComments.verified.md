@@ -3,13 +3,13 @@
 erDiagram
   %% Core customer information
   Customers {
-    int CustomerId(pk) "not null: Auto-generated identifier"
-    nvarchar Name "not null: Customer full name"
+    int CustomerId PK "Auto-generated identifier"
+    nvarchar Name "Customer full name"
   }
   %% Customer orders
   Orders {
-    int OrderId(pk) "not null: Auto-generated identifier"
-    int CustomerId "not null"
+    int OrderId PK "Auto-generated identifier"
+    int CustomerId
   }
   Customers ||--o{ Orders : "FK_Orders_Customers"
 ```

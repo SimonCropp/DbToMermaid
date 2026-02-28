@@ -79,21 +79,32 @@ static class DiagramRender
 
         await writer.WriteAsync("    ");
         await writer.WriteAsync(column.Type);
+        if (column.IsNullable)
+        {
+            await writer.WriteAsync("(nullable)");
+        }
         await writer.WriteAsync(' ');
-        await writer.WriteAsync(isPrimaryKey ? $"{colId}(pk)" : colId);
+        await writer.WriteAsync(colId);
+        if (isPrimaryKey)
+        {
+            await writer.WriteAsync(" PK");
+        }
 
-        await writer.WriteAsync(" \"");
-        await writer.WriteAsync(column.IsNullable ? "null" : "not null");
+        var parts = new List<string>();
         if (column.Computed)
         {
-            await writer.WriteAsync(", computed");
+            parts.Add("computed");
         }
         if (column.Comment is not null)
         {
-            await writer.WriteAsync(": ");
-            await writer.WriteAsync(column.Comment.Replace("\"", "'"));
+            parts.Add(column.Comment.Replace("\"", "'"));
         }
-        await writer.WriteAsync('"');
+        if (parts.Count > 0)
+        {
+            await writer.WriteAsync(" \"");
+            await writer.WriteAsync(string.Join(": ", parts));
+            await writer.WriteAsync('"');
+        }
         await writer.WriteLineAsync();
     }
 

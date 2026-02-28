@@ -21,6 +21,21 @@ public class Tests
     }
 
     [Test]
+    public async Task WithNullable()
+    {
+        var options = new DbContextOptionsBuilder<WithNullableDbContext>()
+            .UseSqlServer("Fake")
+            .Options;
+
+        await using var context = new WithNullableDbContext(options);
+
+        var markdown = await EfToMermaid.RenderMarkdown(context.Model);
+
+        await Verify(markdown, extension: "md")
+            .AddScrubber(_ => _.Insert(0, '\n'));
+    }
+
+    [Test]
     public async Task WithComments()
     {
         var options = new DbContextOptionsBuilder<WithCommentsDbContext>()
