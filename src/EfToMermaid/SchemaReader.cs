@@ -43,7 +43,7 @@ static class SchemaReader
                 var depTable = fk.DeclaringEntityType.GetTableName()!;
                 var principalSchema = fk.PrincipalEntityType.GetSchema() ?? "dbo";
                 var principalTable = fk.PrincipalEntityType.GetTableName()!;
-                var name = fk.GetConstraintName() ?? $"FK_{depTable}_{principalTable}";
+                var name = fk.GetConstraintName() ?? $"fk_{depTable}_{principalTable}";
                 return new ForeignKey(name, depSchema, depTable, principalSchema, principalTable);
             })
             .OrderBy(_ => _.ReferencedSchema, StringComparer.Ordinal)

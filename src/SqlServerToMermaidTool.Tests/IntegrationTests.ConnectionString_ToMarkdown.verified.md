@@ -1,11 +1,11 @@
 ```mermaid
 erDiagram
   Company {
-    int Id PK
+    int Id pk
     nvarchar Name
   }
   Employee {
-    int Id PK
+    int Id pk
     nvarchar FirstName
     int CompanyId
   }

@@ -2,11 +2,11 @@
 ```mermaid
 erDiagram
   Customers {
-    int CustomerId PK
+    int CustomerId pk
     nvarchar Name
   }
   Orders {
-    int OrderId PK
+    int OrderId pk
     int CustomerId
   }
   Customers ||--o{ Orders : "FK_Orders_Customers"

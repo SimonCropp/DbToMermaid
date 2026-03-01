@@ -92,7 +92,7 @@ var markdown = await SqlServerToMermaid.RenderMarkdown(sqlConnection);
 ```mermaid
 erDiagram
   Company {
-    int Id PK
+    int Id pk
     nvarchar Name
     varchar(nullable) TaxNumber
     varchar(nullable) Phone
@@ -101,7 +101,7 @@ erDiagram
     datetime2(nullable) ModifiedAt
   }
   Customer {
-    int Id PK
+    int Id pk
     nvarchar FirstName
     nvarchar LastName
     varchar Email
@@ -111,7 +111,7 @@ erDiagram
     datetime2(nullable) ModifiedAt
   }
   Employee {
-    int Id PK
+    int Id pk
     nvarchar FirstName
     nvarchar LastName
     varchar Email
@@ -123,7 +123,7 @@ erDiagram
     int(nullable) ManagerId
   }
   Manager {
-    int Id PK
+    int Id pk
     int EmployeeId
     nvarchar Department
     tinyint Level
@@ -131,7 +131,7 @@ erDiagram
     date(nullable) EndDate
   }
   Order {
-    int Id PK
+    int Id pk
     varchar OrderNumber
     int CustomerId
     datetime2 OrderDate
@@ -144,7 +144,7 @@ erDiagram
     datetime2(nullable) ModifiedAt
   }
   OrderItem {
-    int Id PK
+    int Id pk
     int OrderId
     int ProductId
     int Quantity
@@ -153,7 +153,7 @@ erDiagram
     decimal(nullable) LineTotal "computed"
   }
   Product {
-    int Id PK
+    int Id pk
     varchar Sku
     nvarchar Name
     nvarchar(nullable) Description
@@ -310,84 +310,8 @@ sealed class NullableOrder
     public int? CustomerId { get; set; }
     public NullableCustomer? Customer { get; set; }
 }
-
-class WithNullableDbContext(DbContextOptions<WithNullableDbContext> options) :
-    DbContext(options)
-{
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder
-            .Entity<NullableCustomer>(builder =>
-            {
-                builder.ToTable("Customers");
-                builder.HasKey(_ => _.CustomerId);
-                builder.Property(_ => _.CustomerId)
-                    .HasColumnType("int").IsRequired();
-                builder.Property(_ => _.Name)
-                    .HasColumnType("nvarchar(50)");
-            });
-
-        modelBuilder
-            .Entity<NullableOrder>(builder =>
-            {
-                builder.ToTable("Orders");
-                builder.HasKey(_ => _.OrderId);
-                builder.Property(_ => _.OrderId)
-                    .HasColumnType("int")
-                    .IsRequired();
-                builder.Property(_ => _.CustomerId)
-                    .HasColumnType("int");
-
-                builder.HasOne(_ => _.Customer)
-                    .WithMany(_ => _.Orders)
-                    .HasForeignKey(_ => _.CustomerId)
-                    .HasConstraintName("FK_Orders_Customers");
-            });
-    }
-}
-
-class WithCommentsDbContext(DbContextOptions<WithCommentsDbContext> options) :
-    DbContext(options)
-{
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder
-            .Entity<Customer>(builder =>
-            {
-                builder.ToTable("Customers", t => t.HasComment("Core customer information"));
-                builder.HasKey(_ => _.CustomerId);
-                builder.Property(_ => _.CustomerId)
-                    .HasColumnType("int")
-                    .IsRequired()
-                    .HasComment("Auto-generated identifier");
-                builder.Property(_ => _.Name)
-                    .HasColumnType("nvarchar(50)")
-                    .IsRequired()
-                    .HasComment("Customer full name");
-            });
-
-        modelBuilder
-            .Entity<Order>(builder =>
-            {
-                builder.ToTable("Orders", t => t.HasComment("Customer orders"));
-                builder.HasKey(_ => _.OrderId);
-                builder.Property(_ => _.OrderId)
-                    .HasColumnType("int")
-                    .IsRequired()
-                    .HasComment("Auto-generated identifier");
-                builder.Property(_ => _.CustomerId)
-                    .HasColumnType("int")
-                    .IsRequired();
-
-                builder.HasOne(_ => _.Customer)
-                    .WithMany(_ => _.Orders)
-                    .HasForeignKey(_ => _.CustomerId)
-                    .HasConstraintName("FK_Orders_Customers");
-            });
-    }
-}
 ```
-<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L140' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L64' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -415,11 +339,11 @@ var markdown = await EfToMermaid.RenderMarkdown(context.Model);
 ```mermaid
 erDiagram
   Customers {
-    int CustomerId PK
+    int CustomerId pk
     nvarchar Name
   }
   Orders {
-    int OrderId PK
+    int OrderId pk
     int CustomerId
   }
   Customers ||--o{ Orders : "FK_Orders_Customers"
@@ -431,9 +355,8 @@ erDiagram
 
  * Generates valid Mermaid `erDiagram` syntax
  * Includes all tables with columns and data types
- * Marks primary keys with `(pk)` notation
+ * Marks primary keys with `pk` notation
  * Shows nullability for each column
  * Indicates computed columns with `computed` annotation
  * Renders foreign key relationships
  * Handles custom database schemas (prefixes table names when not `dbo`)
- * Async-first API with cancellation token support

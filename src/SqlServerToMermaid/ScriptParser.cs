@@ -115,7 +115,7 @@ static class ScriptParser
                 }
                 break;
             case ForeignKeyConstraintDefinition fk:
-                var fkName = fk.ConstraintIdentifier?.Value ?? $"FK_{tableName}_{fk.ReferenceTableName.BaseIdentifier.Value}";
+                var fkName = fk.ConstraintIdentifier?.Value ?? $"fk_{tableName}_{fk.ReferenceTableName.BaseIdentifier.Value}";
                 var refSchema = fk.ReferenceTableName.SchemaIdentifier?.Value ?? "dbo";
                 var refTable = fk.ReferenceTableName.BaseIdentifier.Value;
                 foreignKeys.Add(new(fkName, schemaName, tableName, refSchema, refTable));

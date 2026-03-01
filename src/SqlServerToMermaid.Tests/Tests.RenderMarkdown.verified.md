@@ -2,7 +2,7 @@
 ```mermaid
 erDiagram
   Company {
-    int Id PK
+    int Id pk
     nvarchar Name
     varchar(nullable) TaxNumber
     varchar(nullable) Phone
@@ -11,7 +11,7 @@ erDiagram
     datetime2(nullable) ModifiedAt
   }
   Customer {
-    int Id PK
+    int Id pk
     nvarchar FirstName
     nvarchar LastName
     varchar Email
@@ -21,7 +21,7 @@ erDiagram
     datetime2(nullable) ModifiedAt
   }
   Employee {
-    int Id PK
+    int Id pk
     nvarchar FirstName
     nvarchar LastName
     varchar Email
@@ -33,7 +33,7 @@ erDiagram
     int(nullable) ManagerId
   }
   Manager {
-    int Id PK
+    int Id pk
     int EmployeeId
     nvarchar Department
     tinyint Level
@@ -41,7 +41,7 @@ erDiagram
     date(nullable) EndDate
   }
   Order {
-    int Id PK
+    int Id pk
     varchar OrderNumber
     int CustomerId
     datetime2 OrderDate
@@ -54,7 +54,7 @@ erDiagram
     datetime2(nullable) ModifiedAt
   }
   OrderItem {
-    int Id PK
+    int Id pk
     int OrderId
     int ProductId
     int Quantity
@@ -63,7 +63,7 @@ erDiagram
     decimal(nullable) LineTotal "computed"
   }
   Product {
-    int Id PK
+    int Id pk
     varchar Sku
     nvarchar Name
     nvarchar(nullable) Description

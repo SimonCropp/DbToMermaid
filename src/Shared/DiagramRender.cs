@@ -90,7 +90,7 @@ static class DiagramRender
         await writer.WriteAsync(colId);
         if (isPrimaryKey)
         {
-            await writer.WriteAsync(" PK");
+            await writer.WriteAsync(" pk");
         }
 
         var parts = new List<string>();
