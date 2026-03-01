@@ -5,6 +5,6 @@
     </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ProjectDefaults" PrivateAssets="true" />
+    <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
   </ItemGroup>
 </Project>

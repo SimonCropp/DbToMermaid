@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
-    <PackageReference Include="ProjectDefaults" PrivateAssets="true" />
+    <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
     <Compile Include="..\Shared\*.cs"/>
   </ItemGroup>
 

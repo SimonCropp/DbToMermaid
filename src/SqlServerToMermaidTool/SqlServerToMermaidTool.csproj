@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="CliFx" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
-    <PackageReference Include="ProjectDefaults" PrivateAssets="true" />
+    <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
     <ProjectReference Include="..\SqlServerToMermaid\SqlServerToMermaid.csproj" />
   </ItemGroup>
 
