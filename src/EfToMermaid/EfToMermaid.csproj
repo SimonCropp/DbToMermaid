@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <Description>Renders a Sql Server schema to a Mermaid diagram.</Description>
+    <Description>Renders a EF model to a Mermaid diagram.</Description>
   </PropertyGroup>
 
   <ItemGroup>
