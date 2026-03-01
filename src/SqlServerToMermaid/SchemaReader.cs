@@ -41,9 +41,9 @@ static class SchemaReader
         var foreignKeys = db.Tables
             .Where(_ => !_.IsSystemObject)
             .SelectMany(_ => _.ForeignKeys)
-            .Where(fk =>
+            .Where(_ =>
             {
-                var referenced = db.Tables[fk.ReferencedTable, fk.ReferencedTableSchema];
+                var referenced = db.Tables[_.ReferencedTable, _.ReferencedTableSchema];
                 return referenced is not null && !referenced.IsSystemObject;
             })
             .Select(_ => new ForeignKey(

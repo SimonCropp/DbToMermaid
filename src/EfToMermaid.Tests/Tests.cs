@@ -52,6 +52,22 @@ public class Tests
     }
 
     [Test]
+    public async Task WithEscaping()
+    {
+        var options = new DbContextOptionsBuilder<WithEscapingDbContext>()
+            .UseSqlServer("Fake")
+            .Options;
+
+        await using var context = new WithEscapingDbContext(options);
+
+        var model = context.GetService<Microsoft.EntityFrameworkCore.Metadata.IDesignTimeModel>().Model;
+        var markdown = await EfToMermaid.RenderMarkdown(model);
+
+        await Verify(markdown, extension: "md")
+            .AddScrubber(_ => _.Insert(0, '\n'));
+    }
+
+    [Test]
     public async Task WithSchema()
     {
         var options = new DbContextOptionsBuilder<WithSchemaDbContext>()

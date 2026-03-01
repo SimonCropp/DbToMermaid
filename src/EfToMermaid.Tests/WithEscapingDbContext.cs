@@ -1,4 +1,4 @@
-﻿class WithCommentsDbContext(DbContextOptions<WithCommentsDbContext> options) :
+class WithEscapingDbContext(DbContextOptions<WithEscapingDbContext> options) :
     DbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -6,27 +6,25 @@
         modelBuilder
             .Entity<Customer>(builder =>
             {
-                builder.ToTable("Customers", _ => _.HasComment("Core customer information"));
+                builder.ToTable("Customers", _ => _.HasComment("Contains \"quotes\" here"));
                 builder.HasKey(_ => _.CustomerId);
                 builder.Property(_ => _.CustomerId)
                     .HasColumnType("int")
                     .IsRequired()
-                    .HasComment("Auto-generated identifier");
+                    .HasComment("The \"primary\" key");
                 builder.Property(_ => _.Name)
                     .HasColumnType("nvarchar(50)")
-                    .IsRequired()
-                    .HasComment("Customer full name");
+                    .IsRequired();
             });
 
         modelBuilder
             .Entity<Order>(builder =>
             {
-                builder.ToTable("Orders", _ => _.HasComment("Customer orders"));
+                builder.ToTable("Orders");
                 builder.HasKey(_ => _.OrderId);
                 builder.Property(_ => _.OrderId)
                     .HasColumnType("int")
-                    .IsRequired()
-                    .HasComment("Auto-generated identifier");
+                    .IsRequired();
                 builder.Property(_ => _.CustomerId)
                     .HasColumnType("int")
                     .IsRequired();

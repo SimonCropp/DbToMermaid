@@ -298,6 +298,42 @@ public class Tests
     }
 
     [Test]
+    public async Task RenderMarkdownWithEscaping()
+    {
+        await using var database = await instance.Build();
+        await using (var command = database.Connection.CreateCommand())
+        {
+            command.CommandText =
+                """
+                CREATE TABLE Customers
+                (
+                    CustomerId  INT IDENTITY(1,1) PRIMARY KEY,
+                    Name        NVARCHAR(100)   NOT NULL
+                );
+
+                EXEC sp_addextendedproperty
+                    @name = N'MS_Description',
+                    @value = N'Contains "quotes" here',
+                    @level0type = N'SCHEMA', @level0name = N'dbo',
+                    @level1type = N'TABLE',  @level1name = N'Customers';
+
+                EXEC sp_addextendedproperty
+                    @name = N'MS_Description',
+                    @value = N'The "primary" key',
+                    @level0type = N'SCHEMA', @level0name = N'dbo',
+                    @level1type = N'TABLE',  @level1name = N'Customers',
+                    @level2type = N'COLUMN', @level2name = N'CustomerId';
+                """;
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var markdown = await SqlServerToMermaid.RenderMarkdown(database.Connection);
+
+        await Verify(markdown, extension: "md")
+            .AddScrubber(_ => _.Insert(0, '\n'));
+    }
+
+    [Test]
     public async Task RenderMarkdownFromScript()
     {
         var script = """
@@ -322,6 +358,35 @@ public class Tests
                   FOREIGN KEY (CompanyId)
                   REFERENCES Company(Id)
             );
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task RenderMarkdownFromScriptWithEscaping()
+    {
+        var script = """
+            CREATE TABLE Customers
+            (
+                CustomerId  INT PRIMARY KEY,
+                Name        NVARCHAR(100)   NOT NULL
+            );
+
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description',
+                @value = N'Contains "quotes" here',
+                @level0type = N'SCHEMA', @level0name = N'dbo',
+                @level1type = N'TABLE',  @level1name = N'Customers';
+
+            EXEC sp_addextendedproperty
+                @name = N'MS_Description',
+                @value = N'The "primary" key',
+                @level0type = N'SCHEMA', @level0name = N'dbo',
+                @level1type = N'TABLE',  @level1name = N'Customers',
+                @level2type = N'COLUMN', @level2name = N'CustomerId';
             """;
 
         var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);

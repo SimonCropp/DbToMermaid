@@ -37,13 +37,13 @@ static class SchemaReader
         var foreignKeys = model.GetEntityTypes()
             .Where(_ => !_.IsOwned() && _.GetTableName() is not null)
             .SelectMany(_ => _.GetForeignKeys())
-            .Select(fk =>
+            .Select(_ =>
             {
-                var depSchema = fk.DeclaringEntityType.GetSchema() ?? "dbo";
-                var depTable = fk.DeclaringEntityType.GetTableName()!;
-                var principalSchema = fk.PrincipalEntityType.GetSchema() ?? "dbo";
-                var principalTable = fk.PrincipalEntityType.GetTableName()!;
-                var name = fk.GetConstraintName() ?? $"fk_{depTable}_{principalTable}";
+                var depSchema = _.DeclaringEntityType.GetSchema() ?? "dbo";
+                var depTable = _.DeclaringEntityType.GetTableName()!;
+                var principalSchema = _.PrincipalEntityType.GetSchema() ?? "dbo";
+                var principalTable = _.PrincipalEntityType.GetTableName()!;
+                var name = _.GetConstraintName() ?? $"fk_{depTable}_{principalTable}";
                 return new ForeignKey(name, depSchema, depTable, principalSchema, principalTable);
             })
             .OrderBy(_ => _.ReferencedSchema, StringComparer.Ordinal)

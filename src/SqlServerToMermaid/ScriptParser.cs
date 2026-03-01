@@ -1,5 +1,3 @@
-using Microsoft.SqlServer.TransactSql.ScriptDom;
-
 static class ScriptParser
 {
     public static Database Parse(string script)
@@ -10,8 +8,7 @@ static class ScriptParser
 
         if (errors.Count > 0)
         {
-            var messages = string.Join(Environment.NewLine, errors.Select(e => $"Line {e.Line}: {e.Message}"));
-            throw new InvalidOperationException($"SQL parse errors:{Environment.NewLine}{messages}");
+            throw new SqlParseException(errors);
         }
 
         var tables = new Dictionary<(string Schema, string Name), TableBuilder>();
@@ -26,17 +23,17 @@ static class ScriptParser
         }
 
         var tableList = tables.Values
-            .OrderBy(t => t.Schema, StringComparer.Ordinal)
-            .ThenBy(t => t.Name, StringComparer.Ordinal)
-            .Select(t => t.Build())
+            .OrderBy(_ => _.Schema, StringComparer.Ordinal)
+            .ThenBy(_ => _.Name, StringComparer.Ordinal)
+            .Select(_ => _.Build())
             .ToList();
 
         var fkList = foreignKeys
-            .OrderBy(fk => fk.ReferencedSchema, StringComparer.Ordinal)
-            .ThenBy(fk => fk.ReferencedTable, StringComparer.Ordinal)
-            .ThenBy(fk => fk.ParentSchema, StringComparer.Ordinal)
-            .ThenBy(fk => fk.ParentTable, StringComparer.Ordinal)
-            .ThenBy(fk => fk.Name, StringComparer.Ordinal)
+            .OrderBy(_ => _.ReferencedSchema, StringComparer.Ordinal)
+            .ThenBy(_ => _.ReferencedTable, StringComparer.Ordinal)
+            .ThenBy(_ => _.ParentSchema, StringComparer.Ordinal)
+            .ThenBy(_ => _.ParentTable, StringComparer.Ordinal)
+            .ThenBy(_ => _.Name, StringComparer.Ordinal)
             .ToList();
 
         return new(tableList, fkList);
@@ -187,7 +184,7 @@ static class ScriptParser
         if (!tables.TryGetValue(key, out var builder))
         {
             // Try all schemas
-            builder = tables.Values.FirstOrDefault(t => t.Name.Equals(level1Name, StringComparison.OrdinalIgnoreCase));
+            builder = tables.Values.FirstOrDefault(_ => _.Name.Equals(level1Name, StringComparison.OrdinalIgnoreCase));
             if (builder is null)
             {
                 return;
@@ -274,10 +271,10 @@ static class ScriptParser
 
         public Table Build()
         {
-            var columns = Columns.Select(c =>
-                ColumnComments.TryGetValue(c.Name, out var comment)
-                    ? c with { Comment = comment }
-                    : c
+            var columns = Columns.Select(_ =>
+                ColumnComments.TryGetValue(_.Name, out var comment)
+                    ? _ with { Comment = comment }
+                    : _
             ).ToList();
             return new(Schema, Name, columns, PrimaryKeys.Count > 0 ? PrimaryKeys : null, Comment);
         }
