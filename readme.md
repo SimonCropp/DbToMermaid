@@ -5,7 +5,7 @@
 [![NuGet Status](https://img.shields.io/nuget/v/SqlServerToMermaidTool.svg?label=SqlServerToMermaidTool)](https://www.nuget.org/packages/SqlServerToMermaidTool/)
 [![NuGet Status](https://img.shields.io/nuget/v/EfToMermaid.svg?label=EfToMermaid)](https://www.nuget.org/packages/EfToMermaid/)
 
-Generate [Mermaid ER diagrams](https://mermaid.js.org/syntax/entityRelationshipDiagram.html) from SQL Server databases or Entity Framework Core models.
+Generate [Mermaid ER diagrams](https://mermaid.js.org/syntax/entityRelationshipDiagram.html) from SQL Server databases or Entity Framework models.
 
 
 ## NuGet
