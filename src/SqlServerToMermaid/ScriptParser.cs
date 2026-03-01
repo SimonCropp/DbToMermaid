@@ -105,17 +105,17 @@ static class ScriptParser
     {
         switch (constraint)
         {
-            case UniqueConstraintDefinition { IsPrimaryKey: true } pk:
-                foreach (var col in pk.Columns)
+            case UniqueConstraintDefinition { IsPrimaryKey: true } primaryKey:
+                foreach (var col in primaryKey.Columns)
                 {
                     builder.PrimaryKeys.Add(col.Column.MultiPartIdentifier.Identifiers.Last().Value);
                 }
                 break;
-            case ForeignKeyConstraintDefinition fk:
-                var fkName = fk.ConstraintIdentifier?.Value ?? $"fk_{tableName}_{fk.ReferenceTableName.BaseIdentifier.Value}";
-                var refSchema = fk.ReferenceTableName.SchemaIdentifier?.Value ?? "dbo";
-                var refTable = fk.ReferenceTableName.BaseIdentifier.Value;
-                foreignKeys.Add(new(fkName, schemaName, tableName, refSchema, refTable));
+            case ForeignKeyConstraintDefinition foreignKey:
+                var name = foreignKey.ConstraintIdentifier?.Value ?? $"fk_{tableName}_{foreignKey.ReferenceTableName.BaseIdentifier.Value}";
+                var schema = foreignKey.ReferenceTableName.SchemaIdentifier?.Value ?? "dbo";
+                var table = foreignKey.ReferenceTableName.BaseIdentifier.Value;
+                foreignKeys.Add(new(name, schemaName, tableName, schema, table));
                 break;
         }
     }
@@ -260,23 +260,4 @@ static class ScriptParser
         return true;
     }
 
-    sealed class TableBuilder(string schema, string name)
-    {
-        public string Schema { get; } = schema;
-        public string Name { get; } = name;
-        public List<Column> Columns { get; } = [];
-        public HashSet<string> PrimaryKeys { get; } = new(StringComparer.OrdinalIgnoreCase);
-        public string? Comment { get; set; }
-        public Dictionary<string, string> ColumnComments { get; } = new(StringComparer.OrdinalIgnoreCase);
-
-        public Table Build()
-        {
-            var columns = Columns.Select(_ =>
-                ColumnComments.TryGetValue(_.Name, out var comment)
-                    ? _ with { Comment = comment }
-                    : _
-            ).ToList();
-            return new(Schema, Name, columns, PrimaryKeys.Count > 0 ? PrimaryKeys : null, Comment);
-        }
-    }
 }

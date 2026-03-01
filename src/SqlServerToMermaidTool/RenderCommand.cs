@@ -81,11 +81,12 @@ public class RenderCommand : ICommand
     }
 
     static bool IsTimeoutError(SqlException exception) =>
-        exception.Number == -2 || exception.Message.Contains("timeout", StringComparison.OrdinalIgnoreCase);
+        exception.Number == -2 ||
+        exception.Message.Contains("timeout", StringComparison.OrdinalIgnoreCase);
 
     static bool IsFileLocked(IOException exception) =>
-        exception.HResult == unchecked((int)0x80070020) || // ERROR_SHARING_VIOLATION
-        exception.HResult == unchecked((int)0x80070021);   // ERROR_LOCK_VIOLATION
+        // ERROR_SHARING_VIOLATION and ERROR_LOCK_VIOLATION
+        exception.HResult is unchecked((int)0x80070020) or unchecked((int)0x80070021);
 
     static bool ValidateAndGetOutputFormat(string path)
     {
