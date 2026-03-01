@@ -173,7 +173,7 @@ static class ScriptParser
             !propName.Equals("MS_Description", StringComparison.OrdinalIgnoreCase) ||
             propValue is null ||
             level1Type is null ||
-            !level1Type.Equals("TABLE", StringComparison.OrdinalIgnoreCase) ||
+            !level1Type.Equals("table", StringComparison.OrdinalIgnoreCase) ||
             level1Name is null)
         {
             return;
@@ -192,7 +192,7 @@ static class ScriptParser
         }
 
         if (level2Type is not null &&
-            level2Type.Equals("COLUMN", StringComparison.OrdinalIgnoreCase) &&
+            level2Type.Equals("column", StringComparison.OrdinalIgnoreCase) &&
             level2Name is not null)
         {
             builder.ColumnComments[level2Name] = propValue;
@@ -238,7 +238,7 @@ static class ScriptParser
 
     static bool IsNullable(ColumnDefinition columnDef)
     {
-        // Check for explicit NOT NULL or NULL constraint
+        // Check for explicit not null or null constraint
         foreach (var constraint in columnDef.Constraints)
         {
             if (constraint is NullableConstraintDefinition nullableConstraint)
@@ -247,7 +247,7 @@ static class ScriptParser
             }
         }
 
-        // Check if column is part of PRIMARY KEY (implicitly NOT NULL)
+        // Check if column is part of primary key (implicitly not null)
         foreach (var constraint in columnDef.Constraints)
         {
             if (constraint is UniqueConstraintDefinition { IsPrimaryKey: true })

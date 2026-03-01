@@ -4,6 +4,6 @@
   ShowHelp: false,
   Message:
 SQL parse errors:
-Line 1: Incorrect syntax near 'TABL'.,
+Line 1: Incorrect syntax near 'tabl'.,
   StackTrace: at RenderCommand.ExecuteAsync(IConsole console)
 }

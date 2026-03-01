@@ -28,46 +28,46 @@ Renders Mermaid ER diagrams directly from either:
 <!-- snippet: SampleSchema -->
 <a id='snippet-SampleSchema'></a>
 ```cs
-CREATE TABLE Company
+create table Company
 (
-    Id          INT IDENTITY(1,1) PRIMARY KEY,
-    Name        NVARCHAR(200)   NOT NULL,
-    TaxNumber   VARCHAR(50)     NULL,
-    Phone       VARCHAR(30)     NULL,
-    Email       VARCHAR(255)    NULL,
-    CreatedAt   DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
-    ModifiedAt  DATETIME2       NULL
+    Id          int identity(1,1) primary key,
+    Name        nvarchar(200)   not null,
+    TaxNumber   varchar(50)     null,
+    Phone       varchar(30)     null,
+    Email       varchar(255)    null,
+    CreatedAt   datetime2       not null default getutcdate(),
+    ModifiedAt  datetime2       null
 );
 
-CREATE TABLE Employee
+create table Employee
 (
-    Id          INT IDENTITY(1,1) PRIMARY KEY,
-    FirstName   NVARCHAR(100)   NOT NULL,
-    LastName    NVARCHAR(100)   NOT NULL,
-    Email       VARCHAR(255)    NOT NULL,
-    Phone       VARCHAR(30)     NULL,
-    HireDate    DATE            NOT NULL,
-    CompanyId   INT             NOT NULL,
-    CreatedAt   DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
-    ModifiedAt  DATETIME2       NULL,
+    Id          int identity(1,1) primary key,
+    FirstName   nvarchar(100)   not null,
+    LastName    nvarchar(100)   not null,
+    Email       varchar(255)    not null,
+    Phone       varchar(30)     null,
+    HireDate    date            not null,
+    CompanyId   int             not null,
+    CreatedAt   datetime2       not null default getutcdate(),
+    ModifiedAt  datetime2       null,
 
-    CONSTRAINT FK_Employee_Company
-      FOREIGN KEY (CompanyId)
-      REFERENCES Company(Id),
+    constraint FK_Employee_Company
+      foreign key (CompanyId)
+      references Company(Id),
 );
 
-CREATE TABLE Manager
+create table Manager
 (
-    Id          INT IDENTITY(1,1) PRIMARY KEY,
-    EmployeeId  INT             NOT NULL,
-    Department  NVARCHAR(100)   NOT NULL,
-    Level       TINYINT         NOT NULL DEFAULT 1,
-    StartDate   DATE            NOT NULL,
-    EndDate     DATE            NULL,
+    Id          int identity(1,1) primary key,
+    EmployeeId  int             not null,
+    Department  nvarchar(100)   not null,
+    Level       tinyint         not null default 1,
+    StartDate   date            not null,
+    EndDate     date            null,
 
-    CONSTRAINT FK_Manager_Employee
-      FOREIGN KEY (EmployeeId)
-      REFERENCES Employee(Id)
+    constraint FK_Manager_Employee
+      foreign key (EmployeeId)
+      references Employee(Id)
 );
 -- rest of schema omitted from docs
 ```
@@ -182,9 +182,9 @@ Diagrams can also be generated directly from a SQL script string without a datab
 <a id='snippet-SqlServerScriptUsage'></a>
 ```cs
 var script = """
-    CREATE TABLE Customers (
-        Id INT PRIMARY KEY,
-        Name NVARCHAR(100) NOT NULL
+    create table Customers (
+        Id int primary key,
+        Name nvarchar(100) not null
     );
     """;
 
@@ -218,7 +218,7 @@ sql2mermaid path/to/schema.sql -o diagram.mmd
 
 **From inline SQL:**
 ```bash
-sql2mermaid "CREATE TABLE Users (Id INT PRIMARY KEY, Name NVARCHAR(100))" -o users.md
+sql2mermaid "create table Users (Id int primary key, Name nvarchar(100))" -o users.md
 ```
 
 ### Options
