@@ -47,7 +47,7 @@ static class DiagramRender
             }
             else
             {
-                await writer.WriteLineAsync($"  {tableId} {{");
+                await writer.WriteLineAsync($"  {tableId}[\"**{tableId}**\"] {{");
             }
 
             foreach (var column in table.Columns

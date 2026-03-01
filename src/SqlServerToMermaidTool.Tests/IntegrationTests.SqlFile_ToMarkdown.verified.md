@@ -1,6 +1,6 @@
 ```mermaid
 erDiagram
-  Products {
+  Products["**Products**"] {
     int Id
     nvarchar Name
     decimal Price

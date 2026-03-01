@@ -1,10 +1,10 @@
 ```mermaid
 erDiagram
-  Company {
+  Company["**Company**"] {
     int Id pk
     nvarchar Name
   }
-  Employee {
+  Employee["**Employee**"] {
     int Id pk
     nvarchar FirstName
     int CompanyId

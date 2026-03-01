@@ -1,10 +1,10 @@
 ```mermaid
 erDiagram
-  sales_Customers {
+  sales_Customers["**sales_Customers**"] {
     int CustomerId
     nvarchar Name
   }
-  sales_Orders {
+  sales_Orders["**sales_Orders**"] {
     int OrderId
     int CustomerId
   }

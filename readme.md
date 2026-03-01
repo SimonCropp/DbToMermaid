@@ -91,7 +91,7 @@ var markdown = await SqlServerToMermaid.RenderMarkdown(sqlConnection);
 <!-- include: /SqlServerToMermaid.Tests/Tests.RenderMarkdown.verified.md -->
 ```mermaid
 erDiagram
-  Company {
+  Company["**Company**"] {
     int Id pk
     nvarchar Name
     varchar(nullable) TaxNumber
@@ -100,7 +100,7 @@ erDiagram
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
-  Customer {
+  Customer["**Customer**"] {
     int Id pk
     nvarchar FirstName
     nvarchar LastName
@@ -110,7 +110,7 @@ erDiagram
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
-  Employee {
+  Employee["**Employee**"] {
     int Id pk
     nvarchar FirstName
     nvarchar LastName
@@ -122,7 +122,7 @@ erDiagram
     datetime2(nullable) ModifiedAt
     int(nullable) ManagerId
   }
-  Manager {
+  Manager["**Manager**"] {
     int Id pk
     int EmployeeId
     nvarchar Department
@@ -130,7 +130,7 @@ erDiagram
     date StartDate
     date(nullable) EndDate
   }
-  Order {
+  Order["**Order**"] {
     int Id pk
     varchar OrderNumber
     int CustomerId
@@ -143,7 +143,7 @@ erDiagram
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
-  OrderItem {
+  OrderItem["**OrderItem**"] {
     int Id pk
     int OrderId
     int ProductId
@@ -152,7 +152,7 @@ erDiagram
     decimal Discount
     decimal(nullable) LineTotal "computed"
   }
-  Product {
+  Product["**Product**"] {
     int Id pk
     varchar Sku
     nvarchar Name
@@ -338,11 +338,11 @@ var markdown = await EfToMermaid.RenderMarkdown(context.Model);
 <!-- include: EfToMermaid.Tests/Tests.RenderMarkdown.verified.md -->
 ```mermaid
 erDiagram
-  Customers {
+  Customers["**Customers**"] {
     int CustomerId pk
     nvarchar Name
   }
-  Orders {
+  Orders["**Orders**"] {
     int OrderId pk
     int CustomerId
   }

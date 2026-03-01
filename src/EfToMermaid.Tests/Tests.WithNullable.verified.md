@@ -1,11 +1,11 @@
 
 ```mermaid
 erDiagram
-  Customers {
+  Customers["**Customers**"] {
     int CustomerId pk
     nvarchar(nullable) Name
   }
-  Orders {
+  Orders["**Orders**"] {
     int OrderId pk
     int(nullable) CustomerId
   }

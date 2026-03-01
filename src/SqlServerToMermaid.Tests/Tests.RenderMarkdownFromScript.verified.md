@@ -1,11 +1,11 @@
 ```mermaid
 erDiagram
-  Company {
+  Company["**Company**"] {
     int Id
     nvarchar Name
     datetime2 CreatedAt
   }
-  Employee {
+  Employee["**Employee**"] {
     int Id
     nvarchar FirstName
     nvarchar LastName

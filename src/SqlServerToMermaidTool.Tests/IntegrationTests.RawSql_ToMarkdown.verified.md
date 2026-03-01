@@ -1,6 +1,6 @@
 ```mermaid
 erDiagram
-  Orders {
+  Orders["**Orders**"] {
     int Id
     decimal Total
   }
