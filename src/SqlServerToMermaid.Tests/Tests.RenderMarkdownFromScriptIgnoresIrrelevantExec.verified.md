@@ -1,8 +1,7 @@
 ```mermaid
 erDiagram
-  Products["**Products**"] {
+  hr_Employees["**hr_Employees**: Employee records"] {
     int Id
     nvarchar Name
-    decimal Price
   }
 ```

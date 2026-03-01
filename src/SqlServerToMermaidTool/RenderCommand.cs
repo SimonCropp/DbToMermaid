@@ -42,49 +42,51 @@ public class RenderCommand : ICommand
                 (InputType.FilePath, false) => RenderFileRaw(writer),
                 (InputType.RawSql, true) => RenderScriptMarkdown(writer, Input),
                 (InputType.RawSql, false) => RenderScriptRaw(writer, Input),
-                _ => throw new InvalidOperationException("Unexpected input/output combination")
+                _ => throw new("Unexpected input/output combination")
             };
             await task;
 
             await console.Output.WriteLineAsync($"Generated: {fullPath}");
         }
-        catch (SqlException ex) when (IsTimeoutError(ex))
+        catch (SqlException exception)
+            when (IsTimeoutError(exception))
         {
-            throw new CommandException($"Database operation timed out: {ex.Message}");
+            throw new CommandException($"Database operation timed out: {exception.Message}");
         }
-        catch (SqlException ex)
+        catch (SqlException exception)
         {
-            throw new CommandException($"Database connection failed: {ex.Message}");
+            throw new CommandException($"Database connection failed: {exception.Message}");
         }
         catch (DirectoryNotFoundException)
         {
             var directory = Path.GetDirectoryName(fullPath);
             throw new CommandException($"Output directory does not exist: {directory}");
         }
-        catch (IOException ex) when (IsFileLocked(ex))
+        catch (IOException exception) when (IsFileLocked(exception))
         {
             throw new CommandException($"Output file is locked by another process: {fullPath}");
         }
-        catch (IOException ex)
+        catch (IOException exception)
         {
-            throw new CommandException($"File I/O error: {ex.Message}");
+            throw new CommandException($"File I/O error: {exception.Message}");
         }
         catch (UnauthorizedAccessException)
         {
             throw new CommandException($"Permission denied writing to: {fullPath}");
         }
-        catch (InvalidOperationException ex) when (ex.Message.StartsWith("SQL parse errors"))
+        catch (SqlParseException exception)
         {
-            throw new CommandException($"Invalid SQL schema:\n{ex.Message}");
+            throw new CommandException(exception.Message);
         }
     }
 
-    static bool IsTimeoutError(SqlException ex) =>
-        ex.Number == -2 || ex.Message.Contains("timeout", StringComparison.OrdinalIgnoreCase);
+    static bool IsTimeoutError(SqlException exception) =>
+        exception.Number == -2 ||
+        exception.Message.Contains("timeout", StringComparison.OrdinalIgnoreCase);
 
-    static bool IsFileLocked(IOException ex) =>
-        ex.HResult == unchecked((int)0x80070020) || // ERROR_SHARING_VIOLATION
-        ex.HResult == unchecked((int)0x80070021);   // ERROR_LOCK_VIOLATION
+    static bool IsFileLocked(IOException exception) =>
+        // ERROR_SHARING_VIOLATION and ERROR_LOCK_VIOLATION
+        exception.HResult is unchecked((int)0x80070020) or unchecked((int)0x80070021);
 
     static bool ValidateAndGetOutputFormat(string path)
     {

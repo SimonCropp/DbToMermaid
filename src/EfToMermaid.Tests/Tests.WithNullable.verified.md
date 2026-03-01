@@ -3,11 +3,11 @@
 erDiagram
   Customers["**Customers**"] {
     int CustomerId pk
-    nvarchar Name
+    nvarchar(nullable) Name
   }
   Orders["**Orders**"] {
     int OrderId pk
-    int CustomerId
+    int(nullable) CustomerId
   }
   Customers ||--o{ Orders : "FK_Orders_Customers"
 ```

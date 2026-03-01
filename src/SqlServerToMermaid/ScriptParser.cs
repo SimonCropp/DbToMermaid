@@ -1,5 +1,3 @@
-using Microsoft.SqlServer.TransactSql.ScriptDom;
-
 static class ScriptParser
 {
     public static Database Parse(string script)
@@ -10,8 +8,7 @@ static class ScriptParser
 
         if (errors.Count > 0)
         {
-            var messages = string.Join(Environment.NewLine, errors.Select(e => $"Line {e.Line}: {e.Message}"));
-            throw new InvalidOperationException($"SQL parse errors:{Environment.NewLine}{messages}");
+            throw new SqlParseException(errors);
         }
 
         var tables = new Dictionary<(string Schema, string Name), TableBuilder>();
@@ -26,17 +23,17 @@ static class ScriptParser
         }
 
         var tableList = tables.Values
-            .OrderBy(t => t.Schema, StringComparer.Ordinal)
-            .ThenBy(t => t.Name, StringComparer.Ordinal)
-            .Select(t => t.Build())
+            .OrderBy(_ => _.Schema, StringComparer.Ordinal)
+            .ThenBy(_ => _.Name, StringComparer.Ordinal)
+            .Select(_ => _.Build())
             .ToList();
 
         var fkList = foreignKeys
-            .OrderBy(fk => fk.ReferencedSchema, StringComparer.Ordinal)
-            .ThenBy(fk => fk.ReferencedTable, StringComparer.Ordinal)
-            .ThenBy(fk => fk.ParentSchema, StringComparer.Ordinal)
-            .ThenBy(fk => fk.ParentTable, StringComparer.Ordinal)
-            .ThenBy(fk => fk.Name, StringComparer.Ordinal)
+            .OrderBy(_ => _.ReferencedSchema, StringComparer.Ordinal)
+            .ThenBy(_ => _.ReferencedTable, StringComparer.Ordinal)
+            .ThenBy(_ => _.ParentSchema, StringComparer.Ordinal)
+            .ThenBy(_ => _.ParentTable, StringComparer.Ordinal)
+            .ThenBy(_ => _.Name, StringComparer.Ordinal)
             .ToList();
 
         return new(tableList, fkList);
@@ -51,6 +48,9 @@ static class ScriptParser
                 break;
             case AlterTableAddTableElementStatement alterAdd:
                 ProcessAlterTableAdd(alterAdd, tables, foreignKeys);
+                break;
+            case ExecuteStatement exec:
+                ProcessExecute(exec, tables);
                 break;
         }
     }
@@ -105,20 +105,111 @@ static class ScriptParser
     {
         switch (constraint)
         {
-            case UniqueConstraintDefinition { IsPrimaryKey: true } pk:
-                foreach (var col in pk.Columns)
+            case UniqueConstraintDefinition { IsPrimaryKey: true } primaryKey:
+                foreach (var col in primaryKey.Columns)
                 {
                     builder.PrimaryKeys.Add(col.Column.MultiPartIdentifier.Identifiers.Last().Value);
                 }
                 break;
-            case ForeignKeyConstraintDefinition fk:
-                var fkName = fk.ConstraintIdentifier?.Value ?? $"FK_{tableName}_{fk.ReferenceTableName.BaseIdentifier.Value}";
-                var refSchema = fk.ReferenceTableName.SchemaIdentifier?.Value ?? "dbo";
-                var refTable = fk.ReferenceTableName.BaseIdentifier.Value;
-                foreignKeys.Add(new(fkName, schemaName, tableName, refSchema, refTable));
+            case ForeignKeyConstraintDefinition foreignKey:
+                var name = foreignKey.ConstraintIdentifier?.Value ?? $"fk_{tableName}_{foreignKey.ReferenceTableName.BaseIdentifier.Value}";
+                var schema = foreignKey.ReferenceTableName.SchemaIdentifier?.Value ?? "dbo";
+                var table = foreignKey.ReferenceTableName.BaseIdentifier.Value;
+                foreignKeys.Add(new(name, schemaName, tableName, schema, table));
                 break;
         }
     }
+
+    static void ProcessExecute(ExecuteStatement exec, Dictionary<(string Schema, string Name), TableBuilder> tables)
+    {
+        var spec = exec.ExecuteSpecification;
+        if (spec.ExecutableEntity is not ExecutableProcedureReference procRef)
+        {
+            return;
+        }
+
+        var procName = procRef.ProcedureReference.ProcedureReference.Name;
+        var name = procName.BaseIdentifier.Value;
+        if (!name.Equals("sp_addextendedproperty", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        var parameters = spec.ExecutableEntity is ExecutableProcedureReference epr
+            ? epr.Parameters
+            : [];
+
+        string? propName = null, propValue = null, level1Type = null, level1Name = null, level2Type = null, level2Name = null;
+
+        foreach (var param in parameters)
+        {
+            var paramName = param.Variable?.Name?.ToLowerInvariant();
+            var paramValue = GetLiteralValue(param.ParameterValue);
+
+            switch (paramName)
+            {
+                case "@name":
+                    propName = paramValue;
+                    break;
+                case "@value":
+                    propValue = paramValue;
+                    break;
+                case "@level1type":
+                    level1Type = paramValue;
+                    break;
+                case "@level1name":
+                    level1Name = paramValue;
+                    break;
+                case "@level2type":
+                    level2Type = paramValue;
+                    break;
+                case "@level2name":
+                    level2Name = paramValue;
+                    break;
+            }
+        }
+
+        if (propName is null ||
+            !propName.Equals("MS_Description", StringComparison.OrdinalIgnoreCase) ||
+            propValue is null ||
+            level1Type is null ||
+            !level1Type.Equals("table", StringComparison.OrdinalIgnoreCase) ||
+            level1Name is null)
+        {
+            return;
+        }
+
+        // Find table — try with dbo default schema
+        var key = ("dbo", level1Name);
+        if (!tables.TryGetValue(key, out var builder))
+        {
+            // Try all schemas
+            builder = tables.Values.FirstOrDefault(_ => _.Name.Equals(level1Name, StringComparison.OrdinalIgnoreCase));
+            if (builder is null)
+            {
+                return;
+            }
+        }
+
+        if (level2Type is not null &&
+            level2Type.Equals("column", StringComparison.OrdinalIgnoreCase) &&
+            level2Name is not null)
+        {
+            builder.ColumnComments[level2Name] = propValue;
+        }
+        else
+        {
+            builder.Comment = propValue;
+        }
+    }
+
+    static string? GetLiteralValue(ScalarExpression? expression) =>
+        expression switch
+        {
+            StringLiteral str => str.Value,
+            IntegerLiteral intLit => intLit.Value,
+            _ => null
+        };
 
     static Column BuildColumn(ColumnDefinition columnDef, int ordinal)
     {
@@ -147,7 +238,7 @@ static class ScriptParser
 
     static bool IsNullable(ColumnDefinition columnDef)
     {
-        // Check for explicit NOT NULL or NULL constraint
+        // Check for explicit not null or null constraint
         foreach (var constraint in columnDef.Constraints)
         {
             if (constraint is NullableConstraintDefinition nullableConstraint)
@@ -156,7 +247,7 @@ static class ScriptParser
             }
         }
 
-        // Check if column is part of PRIMARY KEY (implicitly NOT NULL)
+        // Check if column is part of primary key (implicitly not null)
         foreach (var constraint in columnDef.Constraints)
         {
             if (constraint is UniqueConstraintDefinition { IsPrimaryKey: true })
@@ -169,13 +260,4 @@ static class ScriptParser
         return true;
     }
 
-    sealed class TableBuilder(string schema, string name)
-    {
-        public string Schema { get; } = schema;
-        public string Name { get; } = name;
-        public List<Column> Columns { get; } = [];
-        public HashSet<string> PrimaryKeys { get; } = new(StringComparer.OrdinalIgnoreCase);
-
-        public Table Build() => new(Schema, Name, Columns, PrimaryKeys.Count > 0 ? PrimaryKeys : null);
-    }
 }

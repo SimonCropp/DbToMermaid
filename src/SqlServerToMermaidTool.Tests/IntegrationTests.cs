@@ -10,21 +10,21 @@ public class IntegrationTests
         {
             command.CommandText =
                 """
-                CREATE TABLE Company
+                create table Company
                 (
-                    Id   INT PRIMARY KEY,
-                    Name NVARCHAR(200) NOT NULL
+                    Id   int primary key,
+                    Name nvarchar(200) not null
                 );
 
-                CREATE TABLE Employee
+                create table Employee
                 (
-                    Id        INT PRIMARY KEY,
-                    FirstName NVARCHAR(100) NOT NULL,
-                    CompanyId INT           NOT NULL,
+                    Id        int primary key,
+                    FirstName nvarchar(100) not null,
+                    CompanyId int           not null,
 
-                    CONSTRAINT FK_Employee_Company
-                      FOREIGN KEY (CompanyId)
-                      REFERENCES Company(Id)
+                    constraint FK_Employee_Company
+                      foreign key (CompanyId)
+                      references Company(Id)
                 );
                 """;
             await command.ExecuteNonQueryAsync();
@@ -52,10 +52,10 @@ public class IntegrationTests
         {
             command.CommandText =
                 """
-                CREATE TABLE Users
+                create table Users
                 (
-                    Id   INT PRIMARY KEY,
-                    Name NVARCHAR(100) NOT NULL
+                    Id   int primary key,
+                    Name nvarchar(100) not null
                 );
                 """;
             await command.ExecuteNonQueryAsync();
@@ -82,11 +82,11 @@ public class IntegrationTests
         using var outputPath = new TempFile(extension: ".md");
         await File.WriteAllTextAsync(sqlPath,
             """
-            CREATE TABLE Products
+            create table Products
             (
-                Id    INT PRIMARY KEY,
-                Name  NVARCHAR(200) NOT NULL,
-                Price DECIMAL(18,2) NOT NULL
+                Id    int primary key,
+                Name  nvarchar(200) not null,
+                Price decimal(18,2) not null
             );
             """);
 
@@ -110,7 +110,7 @@ public class IntegrationTests
         var console = new FakeInMemoryConsole();
         var cmd = new RenderCommand
         {
-            Input = "CREATE TABLE Orders (Id INT PRIMARY KEY, Total DECIMAL(18,2) NOT NULL)",
+            Input = "create table Orders (Id int primary key, Total decimal(18,2) not null)",
             Output = outputPath
         };
 
@@ -127,7 +127,7 @@ public class IntegrationTests
         var console = new FakeInMemoryConsole();
         var cmd = new RenderCommand
         {
-            Input = "CREATE TABLE Test (Id INT PRIMARY KEY)",
+            Input = "create table Test (Id int primary key)",
             Output = outputPath,
             NewLine = "\\n"
         };

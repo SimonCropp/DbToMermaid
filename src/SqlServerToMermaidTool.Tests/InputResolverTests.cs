@@ -42,7 +42,7 @@ public class InputResolverTests
     [Test]
     public async Task RawSql_CreateTable()
     {
-        var input = "CREATE TABLE Test (Id INT PRIMARY KEY)";
+        var input = "create table Test (Id int primary key)";
         var result = InputResolver.Resolve(input);
         await Assert.That(result).IsEqualTo(InputType.RawSql);
     }
@@ -59,9 +59,9 @@ public class InputResolverTests
     public async Task RawSql_MultiLineScript()
     {
         var input = """
-            CREATE TABLE Company (
-                Id INT PRIMARY KEY,
-                Name NVARCHAR(100) NOT NULL
+            create table Company (
+                Id int primary key,
+                Name nvarchar(100) not null
             );
             """;
         var result = InputResolver.Resolve(input);

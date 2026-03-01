@@ -44,7 +44,7 @@ public class ErrorHandlingTests
 
         var command = new RenderCommand
         {
-            Input = "CREATE TABLE Test (Id INT PRIMARY KEY)",
+            Input = "create table Test (Id int primary key)",
             Output = outputPath
         };
 
@@ -58,7 +58,7 @@ public class ErrorHandlingTests
         var console = new FakeInMemoryConsole();
         var command = new RenderCommand
         {
-            Input = "CREATE TABL Test (Id INT PRIMARY KEY)", // Missing 'E' in TABLE
+            Input = "create tabl Test (Id int primary key)", // Missing 'E' in table
             Output = outputPath
         };
 
@@ -71,7 +71,7 @@ public class ErrorHandlingTests
         var console = new FakeInMemoryConsole();
         var command = new RenderCommand
         {
-            Input = "CREATE TABLE Test (Id INT PRIMARY KEY)",
+            Input = "create table Test (Id int primary key)",
             Output = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString(), "nonexistent", "output.md")
         };
 
@@ -86,7 +86,7 @@ public class ErrorHandlingTests
         var console = new FakeInMemoryConsole();
         var command = new RenderCommand
         {
-            Input = "CREATE TABLE Test (Id INT PRIMARY KEY)",
+            Input = "create table Test (Id int primary key)",
             Output = outputPath
         };
 

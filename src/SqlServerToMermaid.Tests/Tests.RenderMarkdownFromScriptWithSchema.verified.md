@@ -1,12 +1,12 @@
 ```mermaid
 erDiagram
-  sales_Customers {
-    int CustomerId "not null"
-    nvarchar Name "not null"
+  sales_Customers["**sales_Customers**"] {
+    int CustomerId
+    nvarchar Name
   }
-  sales_Orders {
-    int OrderId "not null"
-    int CustomerId "not null"
+  sales_Orders["**sales_Orders**"] {
+    int OrderId
+    int CustomerId
   }
   sales_Customers ||--o{ sales_Orders : "FK_Orders_Customers"
 ```

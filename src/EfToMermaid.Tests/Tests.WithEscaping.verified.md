@@ -1,8 +1,8 @@
 
 ```mermaid
 erDiagram
-  Customers["**Customers**"] {
-    int CustomerId pk
+  Customers["**Customers**: Contains 'quotes' here"] {
+    int CustomerId pk "The 'primary' key"
     nvarchar Name
   }
   Orders["**Orders**"] {

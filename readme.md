@@ -28,46 +28,46 @@ Renders Mermaid ER diagrams directly from either:
 <!-- snippet: SampleSchema -->
 <a id='snippet-SampleSchema'></a>
 ```cs
-CREATE TABLE Company
+create table Company
 (
-    Id          INT IDENTITY(1,1) PRIMARY KEY,
-    Name        NVARCHAR(200)   NOT NULL,
-    TaxNumber   VARCHAR(50)     NULL,
-    Phone       VARCHAR(30)     NULL,
-    Email       VARCHAR(255)    NULL,
-    CreatedAt   DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
-    ModifiedAt  DATETIME2       NULL
+    Id          int identity(1,1) primary key,
+    Name        nvarchar(200)   not null,
+    TaxNumber   varchar(50)     null,
+    Phone       varchar(30)     null,
+    Email       varchar(255)    null,
+    CreatedAt   datetime2       not null default getutcdate(),
+    ModifiedAt  datetime2       null
 );
 
-CREATE TABLE Employee
+create table Employee
 (
-    Id          INT IDENTITY(1,1) PRIMARY KEY,
-    FirstName   NVARCHAR(100)   NOT NULL,
-    LastName    NVARCHAR(100)   NOT NULL,
-    Email       VARCHAR(255)    NOT NULL,
-    Phone       VARCHAR(30)     NULL,
-    HireDate    DATE            NOT NULL,
-    CompanyId   INT             NOT NULL,
-    CreatedAt   DATETIME2       NOT NULL DEFAULT GETUTCDATE(),
-    ModifiedAt  DATETIME2       NULL,
+    Id          int identity(1,1) primary key,
+    FirstName   nvarchar(100)   not null,
+    LastName    nvarchar(100)   not null,
+    Email       varchar(255)    not null,
+    Phone       varchar(30)     null,
+    HireDate    date            not null,
+    CompanyId   int             not null,
+    CreatedAt   datetime2       not null default getutcdate(),
+    ModifiedAt  datetime2       null,
 
-    CONSTRAINT FK_Employee_Company
-      FOREIGN KEY (CompanyId)
-      REFERENCES Company(Id),
+    constraint FK_Employee_Company
+      foreign key (CompanyId)
+      references Company(Id),
 );
 
-CREATE TABLE Manager
+create table Manager
 (
-    Id          INT IDENTITY(1,1) PRIMARY KEY,
-    EmployeeId  INT             NOT NULL,
-    Department  NVARCHAR(100)   NOT NULL,
-    Level       TINYINT         NOT NULL DEFAULT 1,
-    StartDate   DATE            NOT NULL,
-    EndDate     DATE            NULL,
+    Id          int identity(1,1) primary key,
+    EmployeeId  int             not null,
+    Department  nvarchar(100)   not null,
+    Level       tinyint         not null default 1,
+    StartDate   date            not null,
+    EndDate     date            null,
 
-    CONSTRAINT FK_Manager_Employee
-      FOREIGN KEY (EmployeeId)
-      REFERENCES Employee(Id)
+    constraint FK_Manager_Employee
+      foreign key (EmployeeId)
+      references Employee(Id)
 );
 -- rest of schema omitted from docs
 ```
@@ -91,77 +91,77 @@ var markdown = await SqlServerToMermaid.RenderMarkdown(sqlConnection);
 <!-- include: /SqlServerToMermaid.Tests/Tests.RenderMarkdown.verified.md -->
 ```mermaid
 erDiagram
-  Company {
-    int Id(pk) "not null"
-    nvarchar Name "not null"
-    varchar TaxNumber "null"
-    varchar Phone "null"
-    varchar Email "null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+  Company["**Company**"] {
+    int Id pk
+    nvarchar Name
+    varchar(nullable) TaxNumber
+    varchar(nullable) Phone
+    varchar(nullable) Email
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
-  Customer {
-    int Id(pk) "not null"
-    nvarchar FirstName "not null"
-    nvarchar LastName "not null"
-    varchar Email "not null"
-    varchar Phone "null"
-    int CompanyId "null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+  Customer["**Customer**"] {
+    int Id pk
+    nvarchar FirstName
+    nvarchar LastName
+    varchar Email
+    varchar(nullable) Phone
+    int(nullable) CompanyId
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
-  Employee {
-    int Id(pk) "not null"
-    nvarchar FirstName "not null"
-    nvarchar LastName "not null"
-    varchar Email "not null"
-    varchar Phone "null"
-    date HireDate "not null"
-    int CompanyId "not null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
-    int ManagerId "null"
+  Employee["**Employee**"] {
+    int Id pk
+    nvarchar FirstName
+    nvarchar LastName
+    varchar Email
+    varchar(nullable) Phone
+    date HireDate
+    int CompanyId
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
+    int(nullable) ManagerId
   }
-  Manager {
-    int Id(pk) "not null"
-    int EmployeeId "not null"
-    nvarchar Department "not null"
-    tinyint Level "not null"
-    date StartDate "not null"
-    date EndDate "null"
+  Manager["**Manager**"] {
+    int Id pk
+    int EmployeeId
+    nvarchar Department
+    tinyint Level
+    date StartDate
+    date(nullable) EndDate
   }
-  Order {
-    int Id(pk) "not null"
-    varchar OrderNumber "not null"
-    int CustomerId "not null"
-    datetime2 OrderDate "not null"
-    varchar Status "not null"
-    decimal SubTotal "not null"
-    decimal Tax "not null"
-    decimal Total "not null"
-    nvarchar Notes "null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+  Order["**Order**"] {
+    int Id pk
+    varchar OrderNumber
+    int CustomerId
+    datetime2 OrderDate
+    varchar Status
+    decimal SubTotal
+    decimal Tax
+    decimal Total
+    nvarchar(nullable) Notes
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
-  OrderItem {
-    int Id(pk) "not null"
-    int OrderId "not null"
-    int ProductId "not null"
-    int Quantity "not null"
-    decimal UnitPrice "not null"
-    decimal Discount "not null"
-    decimal LineTotal "null, computed"
+  OrderItem["**OrderItem**"] {
+    int Id pk
+    int OrderId
+    int ProductId
+    int Quantity
+    decimal UnitPrice
+    decimal Discount
+    decimal(nullable) LineTotal "computed"
   }
-  Product {
-    int Id(pk) "not null"
-    varchar Sku "not null"
-    nvarchar Name "not null"
-    nvarchar Description "null"
-    decimal UnitPrice "not null"
-    int StockQty "not null"
-    bit IsActive "not null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+  Product["**Product**"] {
+    int Id pk
+    varchar Sku
+    nvarchar Name
+    nvarchar(nullable) Description
+    decimal UnitPrice
+    int StockQty
+    bit IsActive
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
   Company ||--o{ Customer : "FK_Customer_Company"
   Company ||--o{ Employee : "FK_Employee_Company"
@@ -182,9 +182,9 @@ Diagrams can also be generated directly from a SQL script string without a datab
 <a id='snippet-SqlServerScriptUsage'></a>
 ```cs
 var script = """
-    CREATE TABLE Customers (
-        Id INT PRIMARY KEY,
-        Name NVARCHAR(100) NOT NULL
+    create table Customers (
+        Id int primary key,
+        Name nvarchar(100) not null
     );
     """;
 
@@ -218,7 +218,7 @@ sql2mermaid path/to/schema.sql -o diagram.mmd
 
 **From inline SQL:**
 ```bash
-sql2mermaid "CREATE TABLE Users (Id INT PRIMARY KEY, Name NVARCHAR(100))" -o users.md
+sql2mermaid "create table Users (Id int primary key, Name nvarchar(100))" -o users.md
 ```
 
 ### Options
@@ -296,8 +296,22 @@ sealed class Order
     public int CustomerId { get; set; }
     public Customer Customer { get; set; } = null!;
 }
+
+sealed class NullableCustomer
+{
+    public int CustomerId { get; set; }
+    public string? Name { get; set; }
+    public List<NullableOrder> Orders { get; set; } = [];
+}
+
+sealed class NullableOrder
+{
+    public int OrderId { get; set; }
+    public int? CustomerId { get; set; }
+    public NullableCustomer? Customer { get; set; }
+}
 ```
-<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L50' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L64' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -324,13 +338,13 @@ var markdown = await EfToMermaid.RenderMarkdown(context.Model);
 <!-- include: EfToMermaid.Tests/Tests.RenderMarkdown.verified.md -->
 ```mermaid
 erDiagram
-  Customers {
-    int CustomerId(pk) "not null"
-    nvarchar Name "not null"
+  Customers["**Customers**"] {
+    int CustomerId pk
+    nvarchar Name
   }
-  Orders {
-    int OrderId(pk) "not null"
-    int CustomerId "not null"
+  Orders["**Orders**"] {
+    int OrderId pk
+    int CustomerId
   }
   Customers ||--o{ Orders : "FK_Orders_Customers"
 ```
@@ -341,9 +355,8 @@ erDiagram
 
  * Generates valid Mermaid `erDiagram` syntax
  * Includes all tables with columns and data types
- * Marks primary keys with `(pk)` notation
+ * Marks primary keys with `pk` notation
  * Shows nullability for each column
  * Indicates computed columns with `computed` annotation
  * Renders foreign key relationships
  * Handles custom database schemas (prefixes table names when not `dbo`)
- * Async-first API with cancellation token support

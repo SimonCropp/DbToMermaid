@@ -1,4 +1,4 @@
-class SampleDbContext(DbContextOptions<SampleDbContext> options) :
+class WithEscapingDbContext(DbContextOptions<WithEscapingDbContext> options) :
     DbContext(options)
 {
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -6,10 +6,12 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
         modelBuilder
             .Entity<Customer>(builder =>
             {
-                builder.ToTable("Customers");
+                builder.ToTable("Customers", _ => _.HasComment("Contains \"quotes\" here"));
                 builder.HasKey(_ => _.CustomerId);
                 builder.Property(_ => _.CustomerId)
-                    .HasColumnType("int").IsRequired();
+                    .HasColumnType("int")
+                    .IsRequired()
+                    .HasComment("The \"primary\" key");
                 builder.Property(_ => _.Name)
                     .HasColumnType("nvarchar(50)")
                     .IsRequired();
@@ -33,32 +35,4 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
                     .HasConstraintName("FK_Orders_Customers");
             });
     }
-}
-
-sealed class Customer
-{
-    public int CustomerId { get; set; }
-    public string Name { get; set; } = "";
-    public List<Order> Orders { get; set; } = [];
-}
-
-sealed class Order
-{
-    public int OrderId { get; set; }
-    public int CustomerId { get; set; }
-    public Customer Customer { get; set; } = null!;
-}
-
-sealed class NullableCustomer
-{
-    public int CustomerId { get; set; }
-    public string? Name { get; set; }
-    public List<NullableOrder> Orders { get; set; } = [];
-}
-
-sealed class NullableOrder
-{
-    public int OrderId { get; set; }
-    public int? CustomerId { get; set; }
-    public NullableCustomer? Customer { get; set; }
 }

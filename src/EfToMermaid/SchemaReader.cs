@@ -16,6 +16,7 @@ static class SchemaReader
             var schema = group.Key.Schema ?? "dbo";
             var tableName = group.Key.Table;
             var storeObject = StoreObjectIdentifier.Table(tableName, group.Key.Schema);
+            var tableComment = group.First().FindAnnotation("Relational:Comment")?.Value?.ToString();
 
             var properties = group
                 .SelectMany(_ => _.GetProperties())
@@ -30,19 +31,19 @@ static class SchemaReader
                 .Select(_ => _.GetColumnName(storeObject) ?? _.Name)
                 .ToHashSet(StringComparer.Ordinal);
 
-            tables.Add(new(schema, tableName, properties, pkCols));
+            tables.Add(new(schema, tableName, properties, pkCols, tableComment));
         }
 
         var foreignKeys = model.GetEntityTypes()
             .Where(_ => !_.IsOwned() && _.GetTableName() is not null)
             .SelectMany(_ => _.GetForeignKeys())
-            .Select(fk =>
+            .Select(_ =>
             {
-                var depSchema = fk.DeclaringEntityType.GetSchema() ?? "dbo";
-                var depTable = fk.DeclaringEntityType.GetTableName()!;
-                var principalSchema = fk.PrincipalEntityType.GetSchema() ?? "dbo";
-                var principalTable = fk.PrincipalEntityType.GetTableName()!;
-                var name = fk.GetConstraintName() ?? $"FK_{depTable}_{principalTable}";
+                var depSchema = _.DeclaringEntityType.GetSchema() ?? "dbo";
+                var depTable = _.DeclaringEntityType.GetTableName()!;
+                var principalSchema = _.PrincipalEntityType.GetSchema() ?? "dbo";
+                var principalTable = _.PrincipalEntityType.GetTableName()!;
+                var name = _.GetConstraintName() ?? $"fk_{depTable}_{principalTable}";
                 return new ForeignKey(name, depSchema, depTable, principalSchema, principalTable);
             })
             .OrderBy(_ => _.ReferencedSchema, StringComparer.Ordinal)
@@ -61,7 +62,8 @@ static class SchemaReader
         var storeType = property.GetColumnType(storeObject);
         var type = FormatType(storeType, property.ClrType);
         var isComputed = property.GetComputedColumnSql(storeObject) is not null;
-        return new(0, name, type, property.IsNullable, isComputed);
+        var comment = property.FindAnnotation("Relational:Comment")?.Value?.ToString();
+        return new(0, name, type, property.IsNullable, isComputed, comment);
     }
 
     static string FormatType(string? storeType, Type clrType)

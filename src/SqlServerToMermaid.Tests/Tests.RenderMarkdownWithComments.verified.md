@@ -1,0 +1,9 @@
+
+```mermaid
+erDiagram
+  Customers["**Customers**: Core customer information"] {
+    int CustomerId pk "Auto-generated identifier"
+    nvarchar Name "Customer full name"
+    varchar(nullable) Email
+  }
+```

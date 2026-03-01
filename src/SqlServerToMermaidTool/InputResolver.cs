@@ -31,6 +31,6 @@ public static class InputResolver
     }
 
     static bool LooksLikeConnectionString(string input) =>
-        connectionStringKeywords.Any(keyword =>
-            input.Contains(keyword, StringComparison.OrdinalIgnoreCase));
+        connectionStringKeywords.Any(_ =>
+            input.Contains(_, StringComparison.OrdinalIgnoreCase));
 }

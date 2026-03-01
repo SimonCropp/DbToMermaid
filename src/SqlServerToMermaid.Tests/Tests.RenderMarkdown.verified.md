@@ -1,77 +1,77 @@
 
 ```mermaid
 erDiagram
-  Company {
-    int Id(pk) "not null"
-    nvarchar Name "not null"
-    varchar TaxNumber "null"
-    varchar Phone "null"
-    varchar Email "null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+  Company["**Company**"] {
+    int Id pk
+    nvarchar Name
+    varchar(nullable) TaxNumber
+    varchar(nullable) Phone
+    varchar(nullable) Email
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
-  Customer {
-    int Id(pk) "not null"
-    nvarchar FirstName "not null"
-    nvarchar LastName "not null"
-    varchar Email "not null"
-    varchar Phone "null"
-    int CompanyId "null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+  Customer["**Customer**"] {
+    int Id pk
+    nvarchar FirstName
+    nvarchar LastName
+    varchar Email
+    varchar(nullable) Phone
+    int(nullable) CompanyId
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
-  Employee {
-    int Id(pk) "not null"
-    nvarchar FirstName "not null"
-    nvarchar LastName "not null"
-    varchar Email "not null"
-    varchar Phone "null"
-    date HireDate "not null"
-    int CompanyId "not null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
-    int ManagerId "null"
+  Employee["**Employee**"] {
+    int Id pk
+    nvarchar FirstName
+    nvarchar LastName
+    varchar Email
+    varchar(nullable) Phone
+    date HireDate
+    int CompanyId
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
+    int(nullable) ManagerId
   }
-  Manager {
-    int Id(pk) "not null"
-    int EmployeeId "not null"
-    nvarchar Department "not null"
-    tinyint Level "not null"
-    date StartDate "not null"
-    date EndDate "null"
+  Manager["**Manager**"] {
+    int Id pk
+    int EmployeeId
+    nvarchar Department
+    tinyint Level
+    date StartDate
+    date(nullable) EndDate
   }
-  Order {
-    int Id(pk) "not null"
-    varchar OrderNumber "not null"
-    int CustomerId "not null"
-    datetime2 OrderDate "not null"
-    varchar Status "not null"
-    decimal SubTotal "not null"
-    decimal Tax "not null"
-    decimal Total "not null"
-    nvarchar Notes "null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+  Order["**Order**"] {
+    int Id pk
+    varchar OrderNumber
+    int CustomerId
+    datetime2 OrderDate
+    varchar Status
+    decimal SubTotal
+    decimal Tax
+    decimal Total
+    nvarchar(nullable) Notes
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
-  OrderItem {
-    int Id(pk) "not null"
-    int OrderId "not null"
-    int ProductId "not null"
-    int Quantity "not null"
-    decimal UnitPrice "not null"
-    decimal Discount "not null"
-    decimal LineTotal "null, computed"
+  OrderItem["**OrderItem**"] {
+    int Id pk
+    int OrderId
+    int ProductId
+    int Quantity
+    decimal UnitPrice
+    decimal Discount
+    decimal(nullable) LineTotal "computed"
   }
-  Product {
-    int Id(pk) "not null"
-    varchar Sku "not null"
-    nvarchar Name "not null"
-    nvarchar Description "null"
-    decimal UnitPrice "not null"
-    int StockQty "not null"
-    bit IsActive "not null"
-    datetime2 CreatedAt "not null"
-    datetime2 ModifiedAt "null"
+  Product["**Product**"] {
+    int Id pk
+    varchar Sku
+    nvarchar Name
+    nvarchar(nullable) Description
+    decimal UnitPrice
+    int StockQty
+    bit IsActive
+    datetime2 CreatedAt
+    datetime2(nullable) ModifiedAt
   }
   Company ||--o{ Customer : "FK_Customer_Company"
   Company ||--o{ Employee : "FK_Employee_Company"

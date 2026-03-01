@@ -41,7 +41,14 @@ static class DiagramRender
         {
             cancel.ThrowIfCancellationRequested();
             var tableId = ToMermaidId(table.Schema, table.Name);
-            await writer.WriteLineAsync($"  {tableId} {{");
+            if (table.Comment is not null)
+            {
+                await writer.WriteLineAsync($"  {tableId}[\"**{tableId}**: {table.Comment.Replace("\"", "'")}\"] {{");
+            }
+            else
+            {
+                await writer.WriteLineAsync($"  {tableId}[\"**{tableId}**\"] {{");
+            }
 
             foreach (var column in table.Columns
                 .OrderBy(_ => table.PrimaryKeys?.Contains(_.Name) != true)
@@ -75,16 +82,32 @@ static class DiagramRender
 
         await writer.WriteAsync("    ");
         await writer.WriteAsync(column.Type);
+        if (column.IsNullable)
+        {
+            await writer.WriteAsync("(nullable)");
+        }
         await writer.WriteAsync(' ');
-        await writer.WriteAsync(isPrimaryKey ? $"{colId}(pk)" : colId);
+        await writer.WriteAsync(colId);
+        if (isPrimaryKey)
+        {
+            await writer.WriteAsync(" pk");
+        }
 
-        await writer.WriteAsync(" \"");
-        await writer.WriteAsync(column.IsNullable ? "null" : "not null");
+        var parts = new List<string>();
         if (column.Computed)
         {
-            await writer.WriteAsync(", computed");
+            parts.Add("computed");
         }
-        await writer.WriteAsync('"');
+        if (column.Comment is not null)
+        {
+            parts.Add(column.Comment.Replace("\"", "'"));
+        }
+        if (parts.Count > 0)
+        {
+            await writer.WriteAsync(" \"");
+            await writer.WriteAsync(string.Join(": ", parts));
+            await writer.WriteAsync('"');
+        }
         await writer.WriteLineAsync();
     }
 
