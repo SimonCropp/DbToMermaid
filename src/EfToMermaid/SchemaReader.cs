@@ -23,7 +23,7 @@ static class SchemaReader
                 .DistinctBy(_ => _.Name)
                 .Select(_ => BuildColumn(_, storeObject));
 
-            var propetiesViaOwnedNavigations = group
+            var propertiesViaOwnedNavigations = group
                 .SelectMany(_ => _.GetNavigations())
                 .Where(_ => _.TargetEntityType.IsOwned())
                 .SelectMany(x => x.TargetEntityType.GetProperties())
@@ -31,7 +31,7 @@ static class SchemaReader
                 .DistinctBy(_ => _.Name)
                 .Select(_ => BuildColumn(_, storeObject));
 
-            var properties = directProperties.Union(propetiesViaOwnedNavigations)
+            var properties = directProperties.Union(propertiesViaOwnedNavigations)
                 .OrderBy(_ => _.Name, StringComparer.Ordinal)
                 .Select((c, i) => c with { Ordinal = i })
                 .ToList();
