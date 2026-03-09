@@ -18,10 +18,20 @@ static class SchemaReader
             var storeObject = StoreObjectIdentifier.Table(tableName, group.Key.Schema);
             var tableComment = group.First().FindAnnotation("Relational:Comment")?.Value?.ToString();
 
-            var properties = group
+            var directProperties = group
                 .SelectMany(_ => _.GetProperties())
                 .DistinctBy(_ => _.Name)
-                .Select(_ => BuildColumn(_, storeObject))
+                .Select(_ => BuildColumn(_, storeObject));
+
+            var propetiesViaOwnedNavigations = group
+                .SelectMany(_ => _.GetNavigations())
+                .Where(_ => _.TargetEntityType.IsOwned())
+                .SelectMany(x => x.TargetEntityType.GetProperties())
+                .Where(x => !x.IsShadowProperty())
+                .DistinctBy(_ => _.Name)
+                .Select(_ => BuildColumn(_, storeObject));
+
+            var properties = directProperties.Union(propetiesViaOwnedNavigations)
                 .OrderBy(_ => _.Name, StringComparer.Ordinal)
                 .Select((c, i) => c with { Ordinal = i })
                 .ToList();

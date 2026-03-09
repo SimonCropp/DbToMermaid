@@ -4,6 +4,8 @@ erDiagram
   sales_Customers["**sales_Customers**"] {
     int CustomerId pk
     nvarchar Name
+    nvarchar ShippingAddress_City
+    nvarchar ShippingAddress_Street
   }
   sales_Orders["**sales_Orders**"] {
     int OrderId pk
