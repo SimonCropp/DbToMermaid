@@ -13,6 +13,15 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
                 builder.Property(_ => _.Name)
                     .HasColumnType("nvarchar(50)")
                     .IsRequired();
+                builder.OwnsOne(_ => _.ShippingAddress, sa =>
+                {
+                    sa.Property(_ => _.Street)
+                        .HasColumnType("nvarchar(100)")
+                        .IsRequired();
+                    sa.Property(_ => _.City)
+                        .HasColumnType("nvarchar(50)")
+                        .IsRequired();
+                });
             });
 
         modelBuilder
@@ -39,6 +48,7 @@ sealed class Customer
 {
     public int CustomerId { get; set; }
     public string Name { get; set; } = "";
+    public StreetAddress ShippingAddress { get; set; } = null!;
     public List<Order> Orders { get; set; } = [];
 }
 
@@ -61,4 +71,11 @@ sealed class NullableOrder
     public int OrderId { get; set; }
     public int? CustomerId { get; set; }
     public NullableCustomer? Customer { get; set; }
+}
+
+[Owned]
+sealed class StreetAddress
+{
+    public string Street { get; set; } = "";
+    public string City { get; set; } = "";
 }
