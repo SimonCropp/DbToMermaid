@@ -26,8 +26,8 @@ static class SchemaReader
             var propertiesViaOwnedNavigations = group
                 .SelectMany(_ => _.GetNavigations())
                 .Where(_ => _.TargetEntityType.IsOwned())
-                .SelectMany(x => x.TargetEntityType.GetProperties())
-                .Where(x => !x.IsShadowProperty())
+                .SelectMany(_ => _.TargetEntityType.GetProperties())
+                .Where(_ => !_.IsShadowProperty())
                 .DistinctBy(_ => _.Name)
                 .Select(_ => BuildColumn(_, storeObject));
 
