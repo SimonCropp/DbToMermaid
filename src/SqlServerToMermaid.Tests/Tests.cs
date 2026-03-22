@@ -494,6 +494,31 @@ public class Tests
     }
 
     [Test]
+    public async Task RenderMarkdownFromScriptWithComputedAndComment()
+    {
+        var script = """
+            create table Employee
+            (
+                Id          int primary key,
+                Salary      decimal(18,2)   not null,
+                Bonus       decimal(18,2)   not null,
+                TotalPay    as (Salary + Bonus)
+            );
+
+            exec sp_addextendedproperty
+                @name = N'MS_Description',
+                @value = N'Sum of salary and bonus',
+                @level0type = N'schema', @level0name = N'dbo',
+                @level1type = N'table',  @level1name = N'Employee',
+                @level2type = N'column', @level2name = N'TotalPay';
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
     public async Task RenderMarkdownFromScriptIgnoresIrrelevantExec()
     {
         var script = """

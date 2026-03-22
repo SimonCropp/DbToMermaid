@@ -93,20 +93,25 @@ static class DiagramRender
             await writer.WriteAsync(" pk");
         }
 
-        var parts = new List<string>();
-        if (column.Computed)
+        if (column.Computed ||
+            column.Comment is not null)
         {
-            parts.Add("computed");
-        }
-        if (column.Comment is not null)
-        {
-            parts.Add(column.Comment.Replace("\"", "'"));
-        }
-        if (parts.Count > 0)
-        {
-            await writer.WriteAsync(" \"");
-            await writer.WriteAsync(string.Join(": ", parts));
-            await writer.WriteAsync('"');
+            if (column is { Computed: true, Comment: not null })
+            {
+                await writer.WriteAsync($" computed: \"{column.Comment.Replace("\"", "'")}\"");
+            }
+            else
+            {
+                if (column.Computed)
+                {
+                    await writer.WriteAsync(" \"computed\"");
+                }
+                else
+                {
+                    var comment = column.Comment!.Replace("\"", "'");
+                    await writer.WriteAsync($" \"{comment}\"");
+                }
+            }
         }
         await writer.WriteLineAsync();
     }
