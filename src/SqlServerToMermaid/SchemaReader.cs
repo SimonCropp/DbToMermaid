@@ -10,7 +10,10 @@ static class SchemaReader
             await connection.OpenAsync(cancel);
         }
 
-        var serverConnection = new ServerConnection(connection);
+        var serverConnection = new ServerConnection
+        {
+            ConnectionString = connection.ConnectionString,
+        };
         var server = new Server(serverConnection);
         var db = server.Databases[connection.Database];
 
