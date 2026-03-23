@@ -9,15 +9,25 @@
 
     public Table Build()
     {
-        var pks = PrimaryKeys.Count > 0 ? PrimaryKeys : null;
-        var columns = Columns
-            .OrderBy(_ => pks?.Contains(_.Name) != true)
+        if (PrimaryKeys.Count == 0)
+        {
+            var columns = ApplyComments(Columns);
+            return new(Schema, Name, columns, null, Comment);
+        }
+
+        var sorted = Columns
+            .OrderBy(_ => !PrimaryKeys.Contains(_.Name))
             .ThenBy(_ => _.Ordinal)
+            .ToList();
+        var sortedColumns = ApplyComments(sorted);
+        return new(Schema, Name, sortedColumns, PrimaryKeys, Comment);
+    }
+
+    List<Column> ApplyComments(List<Column> columns) =>
+        columns
             .Select(_ =>
                 ColumnComments.TryGetValue(_.Name, out var comment)
                     ? _ with { Comment = comment }
                     : _)
             .ToList();
-        return new(Schema, Name, columns, pks, Comment);
-    }
 }
