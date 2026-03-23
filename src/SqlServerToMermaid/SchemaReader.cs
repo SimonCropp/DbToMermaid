@@ -42,14 +42,15 @@ static class SchemaReader
             })
             .ToList();
 
+        var validTables = db.Tables
+            .Where(_ => !_.IsSystemObject)
+            .Select(_ => (_.Schema, _.Name))
+            .ToHashSet();
+
         var foreignKeys = db.Tables
             .Where(_ => !_.IsSystemObject)
             .SelectMany(_ => _.ForeignKeys)
-            .Where(_ =>
-            {
-                var referenced = db.Tables[_.ReferencedTable, _.ReferencedTableSchema];
-                return referenced is not null && !referenced.IsSystemObject;
-            })
+            .Where(_ => validTables.Contains((_.ReferencedTableSchema, _.ReferencedTable)))
             .Select(_ => new ForeignKey(
                 Name: _.Name,
                 ParentSchema: _.Parent.Schema,
