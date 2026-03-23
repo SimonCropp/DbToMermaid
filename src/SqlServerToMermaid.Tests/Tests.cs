@@ -494,6 +494,23 @@ public class Tests
     }
 
     [Test]
+    public async Task RenderMarkdownFromScriptWithNoPrimaryKey()
+    {
+        var script = """
+            create table AuditLog
+            (
+                Timestamp   datetime2   not null,
+                Action      nvarchar(100) not null,
+                Detail      nvarchar(500) null
+            );
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
     public async Task RenderMarkdownFromScriptIgnoresIrrelevantExec()
     {
         var script = """

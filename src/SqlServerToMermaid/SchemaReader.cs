@@ -27,7 +27,8 @@ static class SchemaReader
                 var tableComment = table.ExtendedProperties["MS_Description"]?.Value?.ToString();
 
                 var columns = table.Columns
-                    .OrderBy(_ => _.ID)
+                    .OrderBy(_ => primaryKeys?.Contains(_.Name) != true)
+                    .ThenBy(_ => _.ID)
                     .Select(_ => new Column(
                         Ordinal: _.ID,
                         Name: _.Name,
