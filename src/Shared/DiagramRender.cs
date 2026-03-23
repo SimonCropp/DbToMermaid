@@ -74,41 +74,23 @@ static class DiagramRender
         return writer.WriteLineAsync($"  {referencedId} ||--o{{ {parentId} : \"{foreignKey.Name}\"");
     }
 
-    static async Task RenderColumn(TextWriter writer, Column column, Table table, Cancel cancel)
+    static Task RenderColumn(TextWriter writer, Column column, Table table, Cancel cancel)
     {
         cancel.ThrowIfCancellationRequested();
         var colId = ToMermaidIdentifier(column.Name);
-        var isPrimaryKey = table.PrimaryKeys != null && table.PrimaryKeys.Contains(column.Name);
+        var isPrimaryKey = table.PrimaryKeys is not null && table.PrimaryKeys.Contains(column.Name);
 
-        await writer.WriteAsync("    ");
-        await writer.WriteAsync(column.Type);
-        if (column.IsNullable)
+        var type = column.IsNullable ? $"{column.Type}(nullable)" : column.Type;
+        var pk = isPrimaryKey ? " pk" : "";
+        var comment = (column.Computed, column.Comment) switch
         {
-            await writer.WriteAsync("(nullable)");
-        }
-        await writer.WriteAsync(' ');
-        await writer.WriteAsync(colId);
-        if (isPrimaryKey)
-        {
-            await writer.WriteAsync(" pk");
-        }
+            (true, not null) => $" \"computed: {column.Comment.Replace("\"", "'")}\"",
+            (true, null) => " \"computed\"",
+            (false, not null) => $" \"{column.Comment.Replace("\"", "'")}\"",
+            _ => ""
+        };
 
-        var parts = new List<string>();
-        if (column.Computed)
-        {
-            parts.Add("computed");
-        }
-        if (column.Comment is not null)
-        {
-            parts.Add(column.Comment.Replace("\"", "'"));
-        }
-        if (parts.Count > 0)
-        {
-            await writer.WriteAsync(" \"");
-            await writer.WriteAsync(string.Join(": ", parts));
-            await writer.WriteAsync('"');
-        }
-        await writer.WriteLineAsync();
+        return writer.WriteLineAsync($"    {type} {colId}{pk}{comment}");
     }
 
     static string ToMermaidIdentifier(string value)
