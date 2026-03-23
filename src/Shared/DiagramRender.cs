@@ -86,6 +86,7 @@ static class DiagramRender
         {
             await writer.WriteAsync("(nullable)");
         }
+
         await writer.WriteAsync(' ');
         await writer.WriteAsync(colId);
         if (isPrimaryKey)
@@ -98,7 +99,7 @@ static class DiagramRender
         {
             if (column is { Computed: true, Comment: not null })
             {
-                await writer.WriteAsync($" computed: \"{column.Comment.Replace("\"", "'")}\"");
+                await writer.WriteAsync($" \"computed: {column.Comment.Replace("\"", "'")}\"");
             }
             else
             {
@@ -113,6 +114,7 @@ static class DiagramRender
                 }
             }
         }
+
         await writer.WriteLineAsync();
     }
 
