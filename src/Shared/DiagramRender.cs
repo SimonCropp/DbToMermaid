@@ -72,41 +72,63 @@ static class DiagramRender
         return writer.WriteLineAsync($"  {referencedId} ||--o{{ {parentId} : \"{foreignKey.Name}\"");
     }
 
-    static async Task RenderColumn(TextWriter writer, Column column, Table table, Cancel cancel)
+    static Task RenderColumn(TextWriter writer, Column column, Table table, Cancel cancel)
     {
         cancel.ThrowIfCancellationRequested();
+
+        string EscapeComment() => column.Comment!.Replace("\"", "'");
+
         var colId = ToMermaidIdentifier(column.Name);
-        var isPrimaryKey = table.PrimaryKeys != null && table.PrimaryKeys.Contains(column.Name);
+        var type = column.IsNullable ? $"{column.Type}(nullable)" : column.Type;
+        var isKey = table.PrimaryKeys is not null &&
+                    table.PrimaryKeys.Contains(column.Name);
 
-        await writer.WriteAsync("    ");
-        await writer.WriteAsync(column.Type);
-        if (column.IsNullable)
+        if (isKey)
         {
-            await writer.WriteAsync("(nullable)");
-        }
-        await writer.WriteAsync(' ');
-        await writer.WriteAsync(colId);
-        if (isPrimaryKey)
-        {
-            await writer.WriteAsync(" pk");
+            return RenderKey();
         }
 
-        var parts = new List<string>();
-        if (column.Computed)
+        return RenderNonKey();
+
+        Task RenderKey()
         {
-            parts.Add("computed");
+            if ((column.Computed, column.Comment) is (true, not null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} pk \"computed: {EscapeComment()}\"");
+            }
+
+            if ((column.Computed, column.Comment) is (true, null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} pk \"computed\"");
+            }
+
+            if ((column.Computed, column.Comment) is (false, not null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} pk \"{EscapeComment()}\"");
+            }
+
+            return writer.WriteLineAsync($"    {type} {colId} pk");
         }
-        if (column.Comment is not null)
+
+        Task RenderNonKey()
         {
-            parts.Add(column.Comment.Replace("\"", "'"));
+            if ((column.Computed, column.Comment) is (true, not null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} \"computed: {EscapeComment()}\"");
+            }
+
+            if ((column.Computed, column.Comment) is (true, null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} \"computed\"");
+            }
+
+            if ((column.Computed, column.Comment) is (false, not null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} \"{EscapeComment()}\"");
+            }
+
+            return writer.WriteLineAsync($"    {type} {colId}");
         }
-        if (parts.Count > 0)
-        {
-            await writer.WriteAsync(" \"");
-            await writer.WriteAsync(string.Join(": ", parts));
-            await writer.WriteAsync('"');
-        }
-        await writer.WriteLineAsync();
     }
 
     static string ToMermaidIdentifier(string value)
