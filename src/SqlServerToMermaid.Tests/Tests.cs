@@ -519,6 +519,50 @@ public class Tests
     }
 
     [Test]
+    public async Task RenderMarkdownFromScriptWithNoPrimaryKey()
+    {
+        var script = """
+            create table AuditLog
+            (
+                Timestamp   datetime2   not null,
+                Action      nvarchar(100) not null,
+                Detail      nvarchar(500) null
+            );
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task RenderMarkdownFromScriptWithCommentNoSchema()
+    {
+        var script = """
+            create table Customers
+            (
+                Id      int primary key,
+                Name    nvarchar(100) not null
+            );
+
+            exec sp_addextendedproperty
+                @name = N'MS_Description',
+                @value = N'Main customer table',
+                @level1type = N'table',  @level1name = N'Customers';
+
+            exec sp_addextendedproperty
+                @name = N'MS_Description',
+                @value = N'Unique identifier',
+                @level1type = N'table',  @level1name = N'Customers',
+                @level2type = N'column', @level2name = N'Id';
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
     public async Task RenderMarkdownFromScriptIgnoresIrrelevantExec()
     {
         var script = """

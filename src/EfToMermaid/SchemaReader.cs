@@ -31,15 +31,16 @@ static class SchemaReader
                 .DistinctBy(_ => _.Name)
                 .Select(_ => BuildColumn(_, storeObject));
 
-            var properties = directProperties.Union(propertiesViaOwnedNavigations)
-                .OrderBy(_ => _.Name, StringComparer.Ordinal)
-                .Select((c, i) => c with { Ordinal = i })
-                .ToList();
-
             var pkCols = group
                 .SelectMany(_ => _.FindPrimaryKey()?.Properties ?? [])
                 .Select(_ => _.GetColumnName(storeObject) ?? _.Name)
                 .ToHashSet(StringComparer.Ordinal);
+
+            var properties = directProperties.Union(propertiesViaOwnedNavigations)
+                .OrderBy(_ => !pkCols.Contains(_.Name))
+                .ThenBy(_ => _.Name, StringComparer.Ordinal)
+                .Select((c, i) => c with { Ordinal = i })
+                .ToList();
 
             tables.Add(new(schema, tableName, properties, pkCols, tableComment));
         }

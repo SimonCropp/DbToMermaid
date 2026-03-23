@@ -50,9 +50,7 @@ static class DiagramRender
                 await writer.WriteLineAsync($"  {tableId}[\"**{tableId}**\"] {{");
             }
 
-            foreach (var column in table.Columns
-                         .OrderBy(_ => table.PrimaryKeys?.Contains(_.Name) != true)
-                         .ThenBy(_ => _.Ordinal))
+            foreach (var column in table.Columns)
             {
                 await RenderColumn(writer, column, table, cancel);
             }
