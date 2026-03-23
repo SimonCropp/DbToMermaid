@@ -139,7 +139,7 @@ static class ScriptParser
             ? epr.Parameters
             : [];
 
-        string? propName = null, propValue = null, level1Type = null, level1Name = null, level2Type = null, level2Name = null;
+        string? propName = null, propValue = null, level0Name = null, level1Type = null, level1Name = null, level2Type = null, level2Name = null;
 
         foreach (var param in parameters)
         {
@@ -153,6 +153,9 @@ static class ScriptParser
                     break;
                 case "@value":
                     propValue = paramValue;
+                    break;
+                case "@level0name":
+                    level0Name = paramValue;
                     break;
                 case "@level1type":
                     level1Type = paramValue;
@@ -179,16 +182,10 @@ static class ScriptParser
             return;
         }
 
-        // Find table — try with dbo default schema
-        var key = ("dbo", level1Name);
-        if (!tables.TryGetValue(key, out var builder))
+        var schema = level0Name ?? "dbo";
+        if (!tables.TryGetValue((schema, level1Name), out var builder))
         {
-            // Try all schemas
-            builder = tables.Values.FirstOrDefault(_ => _.Name.Equals(level1Name, StringComparison.OrdinalIgnoreCase));
-            if (builder is null)
-            {
-                return;
-            }
+            return;
         }
 
         if (level2Type is not null &&
