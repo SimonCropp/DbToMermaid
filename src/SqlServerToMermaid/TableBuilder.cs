@@ -9,25 +9,34 @@
 
     public Table Build()
     {
-        if (PrimaryKeys.Count == 0)
+        if (PrimaryKeys.Count > 0)
         {
-            var columns = ApplyComments(Columns);
+            var columns = Columns
+                .OrderBy(_ => !PrimaryKeys.Contains(_.Name))
+                .ThenBy(_ => _.Ordinal)
+                .Select(ApplyComment)
+                .ToList();
+            return new(Schema, Name, columns, PrimaryKeys, Comment);
+        }
+        else
+        {
+            var columns = Columns
+                .Select(ApplyComment)
+                .ToList();
             return new(Schema, Name, columns, null, Comment);
         }
-
-        var sorted = Columns
-            .OrderBy(_ => !PrimaryKeys.Contains(_.Name))
-            .ThenBy(_ => _.Ordinal)
-            .ToList();
-        var sortedColumns = ApplyComments(sorted);
-        return new(Schema, Name, sortedColumns, PrimaryKeys, Comment);
     }
 
-    List<Column> ApplyComments(List<Column> columns) =>
-        columns
-            .Select(_ =>
-                ColumnComments.TryGetValue(_.Name, out var comment)
-                    ? _ with { Comment = comment }
-                    : _)
-            .ToList();
+    Column ApplyComment(Column column)
+    {
+        if (ColumnComments.TryGetValue(column.Name, out var comment))
+        {
+            return column with
+            {
+                Comment = comment
+            };
+        }
+
+        return column;
+    }
 }
