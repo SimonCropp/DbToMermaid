@@ -473,27 +473,6 @@ public class Tests
     }
 
     [Test]
-    public async Task RenderMarkdownFromScriptWithAlterTableAddColumn()
-    {
-        var script = """
-            create table Items
-            (
-                Id int primary key
-            );
-
-            alter table Items
-            add Name nvarchar(100) not null;
-
-            alter table NewTable
-            add Value int null;
-            """;
-
-        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
-
-        await Verify(markdown, extension: "md");
-    }
-
-    [Test]
     public async Task RenderMarkdownFromScriptWithComputedAndComment()
     {
         var script = """
@@ -511,6 +490,27 @@ public class Tests
                 @level0type = N'schema', @level0name = N'dbo',
                 @level1type = N'table',  @level1name = N'Employee',
                 @level2type = N'column', @level2name = N'TotalPay';
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task RenderMarkdownFromScriptWithAlterTableAddColumn()
+    {
+        var script = """
+            create table Items
+            (
+                Id int primary key
+            );
+
+            alter table Items
+            add Name nvarchar(100) not null;
+
+            alter table NewTable
+            add Value int null;
             """;
 
         var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
