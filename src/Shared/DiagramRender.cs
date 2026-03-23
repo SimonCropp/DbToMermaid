@@ -51,8 +51,8 @@ static class DiagramRender
             }
 
             foreach (var column in table.Columns
-                .OrderBy(_ => table.PrimaryKeys?.Contains(_.Name) != true)
-                .ThenBy(_ => _.Ordinal))
+                         .OrderBy(_ => table.PrimaryKeys?.Contains(_.Name) != true)
+                         .ThenBy(_ => _.Ordinal))
             {
                 await RenderColumn(writer, column, table, cancel);
             }
@@ -77,20 +77,60 @@ static class DiagramRender
     static Task RenderColumn(TextWriter writer, Column column, Table table, Cancel cancel)
     {
         cancel.ThrowIfCancellationRequested();
+
+        string EscapeComment() => column.Comment!.Replace("\"", "'");
+
         var colId = ToMermaidIdentifier(column.Name);
-        var isPrimaryKey = table.PrimaryKeys is not null && table.PrimaryKeys.Contains(column.Name);
-
         var type = column.IsNullable ? $"{column.Type}(nullable)" : column.Type;
-        var pk = isPrimaryKey ? " pk" : "";
-        var comment = (column.Computed, column.Comment) switch
-        {
-            (true, not null) => $" \"computed: {column.Comment.Replace("\"", "'")}\"",
-            (true, null) => " \"computed\"",
-            (false, not null) => $" \"{column.Comment.Replace("\"", "'")}\"",
-            _ => ""
-        };
+        var isKey = table.PrimaryKeys is not null &&
+                    table.PrimaryKeys.Contains(column.Name);
 
-        return writer.WriteLineAsync($"    {type} {colId}{pk}{comment}");
+        if (isKey)
+        {
+            return RenderKey();
+        }
+
+        return RenderNonKey();
+
+        Task RenderKey()
+        {
+            if ((column.Computed, column.Comment) is (true, not null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} pk \"computed: {EscapeComment()}\"");
+            }
+
+            if ((column.Computed, column.Comment) is (true, null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} pk \"computed\"");
+            }
+
+            if ((column.Computed, column.Comment) is (false, not null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} pk \"{EscapeComment()}\"");
+            }
+
+            return writer.WriteLineAsync($"    {type} {colId} pk");
+        }
+
+        Task RenderNonKey()
+        {
+            if ((column.Computed, column.Comment) is (true, not null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} \"computed: {EscapeComment()}\"");
+            }
+
+            if ((column.Computed, column.Comment) is (true, null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} \"computed\"");
+            }
+
+            if ((column.Computed, column.Comment) is (false, not null))
+            {
+                return writer.WriteLineAsync($"    {type} {colId} \"{EscapeComment()}\"");
+            }
+
+            return writer.WriteLineAsync($"    {type} {colId}");
+        }
     }
 
     static string ToMermaidIdentifier(string value)
