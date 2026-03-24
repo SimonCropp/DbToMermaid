@@ -14,6 +14,8 @@ static class SchemaReader
         {
             ConnectionString = connection.ConnectionString,
         };
+        try
+        {
         var server = new Server(serverConnection);
         var db = server.Databases[connection.Database];
 
@@ -70,6 +72,11 @@ static class SchemaReader
         }
 
         return new(tables, foreignKeys);
+        }
+        finally
+        {
+            serverConnection.Disconnect();
+        }
     }
 
     static HashSet<string>? GetPrimaryKeys(Microsoft.SqlServer.Management.Smo.Table table)
