@@ -2,7 +2,7 @@
   <ItemGroup>
     <PackageVersion Include="CliFx" Version="3.0.0" />
     <PackageVersion Include="LocalDb" Version="24.0.0" />
-    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.1.0" />
+    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.2.0" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.6" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.6" />
@@ -10,8 +10,8 @@
     <PackageVersion Include="Microsoft.SqlServer.SqlManagementObjects" Version="181.19.0" />
     <PackageVersion Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="170.191.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.172" />
-    <PackageVersion Include="TUnit" Version="1.34.5" />
+    <PackageVersion Include="TUnit" Version="1.35.2" />
     <PackageVersion Include="Verify.DiffPlex" Version="3.1.2" />
-    <PackageVersion Include="Verify.TUnit" Version="31.15.0" />
+    <PackageVersion Include="Verify.TUnit" Version="31.16.1" />
   </ItemGroup>
 </Project>
