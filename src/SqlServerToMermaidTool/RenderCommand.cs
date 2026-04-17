@@ -1,23 +1,23 @@
 [Command(Description = "Generate Mermaid ER diagram from SQL Server database or script")]
-public class RenderCommand : ICommand
+public partial class RenderCommand : ICommand
 {
     [CommandParameter(
         0,
         Name = "input",
         Description = "SQL connection string, path to .sql file, or raw SQL script")]
-    public required string Input { get; init; }
+    public required string Input { get; set; }
 
     [CommandOption(
         "output",
         'o',
         Description = "Output file path (.md or .mmd). Default: schema.md")]
-    public string Output { get; init; } = "schema.md";
+    public string Output { get; set; } = "schema.md";
 
     [CommandOption(
         "newline",
         'n',
         Description = @"Custom newline sequence (e.g., \n or \r\n)")]
-    public string? NewLine { get; init; }
+    public string? NewLine { get; set; }
 
     public async ValueTask ExecuteAsync(IConsole console)
     {
