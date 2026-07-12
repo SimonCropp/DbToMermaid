@@ -1,4 +1,4 @@
-```mermaid
+﻿```mermaid
 erDiagram
   Products["**Products**"] {
     int Id

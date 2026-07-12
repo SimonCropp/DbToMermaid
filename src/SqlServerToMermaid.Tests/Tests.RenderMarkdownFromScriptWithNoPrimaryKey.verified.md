@@ -1,4 +1,4 @@
-```mermaid
+﻿```mermaid
 erDiagram
   AuditLog["**AuditLog**"] {
     datetime2 Timestamp

@@ -1,4 +1,4 @@
-```mermaid
+﻿```mermaid
 erDiagram
   Company["**Company**"] {
     int Id pk

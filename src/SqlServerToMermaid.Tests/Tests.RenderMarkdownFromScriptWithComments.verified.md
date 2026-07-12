@@ -1,4 +1,4 @@
-```mermaid
+﻿```mermaid
 erDiagram
   Customers["**Customers**: Core customer information"] {
     int CustomerId "Auto-generated identifier"
