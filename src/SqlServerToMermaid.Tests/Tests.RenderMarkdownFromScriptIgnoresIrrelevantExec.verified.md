@@ -2,6 +2,6 @@
 erDiagram
   hr_Employees["**hr_Employees**: Employee records"] {
     int Id
-    nvarchar Name
+    nvarchar(100) Name
   }
 ```

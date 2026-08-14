@@ -3,9 +3,9 @@
 erDiagram
   sales_Customers["**sales_Customers**"] {
     int CustomerId pk
-    nvarchar Name
-    nvarchar ShippingAddress_City
-    nvarchar ShippingAddress_Street
+    nvarchar(50) Name
+    nvarchar(max) ShippingAddress_City
+    nvarchar(max) ShippingAddress_Street
   }
   sales_Orders["**sales_Orders**"] {
     int OrderId pk

@@ -2,7 +2,7 @@
 erDiagram
   AuditLog["**AuditLog**"] {
     datetime2 Timestamp
-    nvarchar Action
-    nvarchar(nullable) Detail
+    nvarchar(100) Action
+    nvarchar(500)(nullable) Detail
   }
 ```

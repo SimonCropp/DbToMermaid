@@ -86,18 +86,34 @@ static class SchemaReader
         }
 
         token = token.Trim();
+
         var paren = token.IndexOf('(');
-        if (paren >= 0)
+        if (paren < 0)
         {
-            token = token[..paren];
+            return TrimAtSpace(token).ToLowerInvariant();
         }
 
-        var space = token.IndexOf(' ');
-        if (space >= 0)
+        var name = TrimAtSpace(token[..paren]).ToLowerInvariant();
+        var close = token.IndexOf(')', paren);
+        var arguments = close < 0 ? token[(paren + 1)..] : token[(paren + 1)..close];
+        // mermaid attribute types cannot contain whitespace
+        arguments = string.Join(',', arguments.Split(',').Select(_ => _.Trim()));
+        if (arguments.Length == 0)
         {
-            token = token[..space];
+            return name;
         }
 
-        return token.ToLowerInvariant();
+        return $"{name}({arguments.ToLowerInvariant()})";
+    }
+
+    static string TrimAtSpace(string value)
+    {
+        var space = value.IndexOf(' ');
+        if (space < 0)
+        {
+            return value;
+        }
+
+        return value[..space];
     }
 }

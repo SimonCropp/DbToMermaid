@@ -2,7 +2,7 @@
 erDiagram
   sales_Customers["**sales_Customers**"] {
     int CustomerId pk
-    nvarchar Name
+    nvarchar(50) Name
   }
   sales_Orders["**sales_Orders**"] {
     int OrderId pk

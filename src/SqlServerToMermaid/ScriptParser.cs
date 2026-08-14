@@ -227,10 +227,23 @@ static class ScriptParser
 
         return dataType switch
         {
-            SqlDataTypeReference sqlType => sqlType.SqlDataTypeOption.ToString().ToLowerInvariant(),
-            UserDataTypeReference userType => userType.Name.BaseIdentifier.Value.ToLowerInvariant(),
+            SqlDataTypeReference sqlType => sqlType.SqlDataTypeOption.ToString().ToLowerInvariant() + FormatParameters(sqlType),
+            UserDataTypeReference userType => userType.Name.BaseIdentifier.Value.ToLowerInvariant() + FormatParameters(userType),
             _ => "unknown"
         };
+    }
+
+    static string FormatParameters(ParameterizedDataTypeReference dataType)
+    {
+        if (dataType.Parameters.Count == 0)
+        {
+            return "";
+        }
+
+        // Mermaid ER diagram type tokens cannot contain whitespace, so no space after the comma in eg decimal(18,2)
+        var parameters = dataType.Parameters
+            .Select(_ => _ is MaxLiteral ? "max" : _.Value.ToLowerInvariant());
+        return $"({string.Join(',', parameters)})";
     }
 
     static bool IsNullable(ColumnDefinition columnDef)

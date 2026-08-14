@@ -2,6 +2,6 @@
 erDiagram
   Customers["**Customers**: Main customer table"] {
     int Id "Unique identifier"
-    nvarchar Name
+    nvarchar(100) Name
   }
 ```

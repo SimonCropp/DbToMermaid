@@ -2,7 +2,7 @@
 erDiagram
   Customers["**Customers**: Core customer information"] {
     int CustomerId "Auto-generated identifier"
-    nvarchar Name "Customer full name"
-    varchar(nullable) Email
+    nvarchar(100) Name "Customer full name"
+    varchar(255)(nullable) Email
   }
 ```

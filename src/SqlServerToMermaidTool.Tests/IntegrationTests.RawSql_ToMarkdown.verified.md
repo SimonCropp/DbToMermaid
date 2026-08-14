@@ -2,6 +2,6 @@
 erDiagram
   Orders["**Orders**"] {
     int Id
-    decimal Total
+    decimal(18,2) Total
   }
 ```
