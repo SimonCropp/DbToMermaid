@@ -2,7 +2,7 @@
 erDiagram
   Items["**Items**"] {
     int Id
-    nvarchar Name
+    nvarchar(100) Name
   }
   NewTable["**NewTable**"] {
     int(nullable) Value

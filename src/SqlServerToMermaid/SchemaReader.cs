@@ -91,14 +91,56 @@ static class SchemaReader
 
     public static string FormatType(DataType dataType)
     {
-        // Mermaid ER diagram type token must be a simple word (no parentheses); normalize SMO types accordingly.
+        // Mermaid ER diagram type tokens cannot contain whitespace, so no space after the comma in eg decimal(18,2)
         var token = dataType.SqlDataType.ToString();
-        if (token.EndsWith("Max", StringComparison.Ordinal))
+        var isMax = token.EndsWith("Max", StringComparison.Ordinal);
+        if (isMax)
         {
             token = token[..^3];
         }
 
         token = token.ToLowerInvariant();
-        return token is "userdefineddatatype" or "none" ? dataType.Name : token;
+        if (token is "userdefineddatatype" or "none")
+        {
+            return dataType.Name;
+        }
+
+        if (isMax)
+        {
+            return $"{token}(max)";
+        }
+
+        return token + FormatArguments(dataType);
+    }
+
+    static string FormatArguments(DataType dataType)
+    {
+        switch (dataType.SqlDataType)
+        {
+            case SqlDataType.Char:
+            case SqlDataType.NChar:
+            case SqlDataType.VarChar:
+            case SqlDataType.NVarChar:
+            case SqlDataType.Binary:
+            case SqlDataType.VarBinary:
+                if (dataType.MaximumLength > 0)
+                {
+                    return $"({dataType.MaximumLength})";
+                }
+
+                return "";
+            case SqlDataType.Decimal:
+            case SqlDataType.Numeric:
+                if (dataType.NumericPrecision > 0)
+                {
+                    return $"({dataType.NumericPrecision},{dataType.NumericScale})";
+                }
+
+                return "";
+            // float precision, and fractional seconds scale for datetime2/datetimeoffset/time, are
+            // deliberately omitted. They are noise in a diagram
+            default:
+                return "";
+        }
     }
 }

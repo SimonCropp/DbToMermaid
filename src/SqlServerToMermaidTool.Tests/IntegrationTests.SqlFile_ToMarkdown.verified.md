@@ -2,7 +2,7 @@
 erDiagram
   Products["**Products**"] {
     int Id
-    nvarchar Name
-    decimal Price
+    nvarchar(200) Name
+    decimal(18,2) Price
   }
 ```

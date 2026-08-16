@@ -3,9 +3,9 @@
 erDiagram
   Customers["**Customers**: Core customer information"] {
     int CustomerId pk "Auto-generated identifier"
-    nvarchar Name "Customer full name"
-    nvarchar ShippingAddress_City
-    nvarchar ShippingAddress_Street
+    nvarchar(50) Name "Customer full name"
+    nvarchar(max) ShippingAddress_City
+    nvarchar(max) ShippingAddress_Street
   }
   Orders["**Orders**: Customer orders"] {
     int OrderId pk "Auto-generated identifier"

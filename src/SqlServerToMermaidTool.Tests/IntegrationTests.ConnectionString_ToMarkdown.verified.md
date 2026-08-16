@@ -2,11 +2,11 @@
 erDiagram
   Company["**Company**"] {
     int Id pk
-    nvarchar Name
+    nvarchar(200) Name
   }
   Employee["**Employee**"] {
     int Id pk
-    nvarchar FirstName
+    nvarchar(100) FirstName
     int CompanyId
   }
   Company ||--o{ Employee : "FK_Employee_Company"

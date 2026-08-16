@@ -3,29 +3,29 @@
 erDiagram
   Company["**Company**"] {
     int Id pk
-    nvarchar Name
-    varchar(nullable) TaxNumber
-    varchar(nullable) Phone
-    varchar(nullable) Email
+    nvarchar(200) Name
+    varchar(50)(nullable) TaxNumber
+    varchar(30)(nullable) Phone
+    varchar(255)(nullable) Email
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
   Customer["**Customer**"] {
     int Id pk
-    nvarchar FirstName
-    nvarchar LastName
-    varchar Email
-    varchar(nullable) Phone
+    nvarchar(100) FirstName
+    nvarchar(100) LastName
+    varchar(255) Email
+    varchar(30)(nullable) Phone
     int(nullable) CompanyId
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
   Employee["**Employee**"] {
     int Id pk
-    nvarchar FirstName
-    nvarchar LastName
-    varchar Email
-    varchar(nullable) Phone
+    nvarchar(100) FirstName
+    nvarchar(100) LastName
+    varchar(255) Email
+    varchar(30)(nullable) Phone
     date HireDate
     int CompanyId
     datetime2 CreatedAt
@@ -35,21 +35,21 @@ erDiagram
   Manager["**Manager**"] {
     int Id pk
     int EmployeeId
-    nvarchar Department
+    nvarchar(100) Department
     tinyint Level
     date StartDate
     date(nullable) EndDate
   }
   Order["**Order**"] {
     int Id pk
-    varchar OrderNumber
+    varchar(30) OrderNumber
     int CustomerId
     datetime2 OrderDate
-    varchar Status
-    decimal SubTotal
-    decimal Tax
-    decimal Total
-    nvarchar(nullable) Notes
+    varchar(20) Status
+    decimal(18,2) SubTotal
+    decimal(18,2) Tax
+    decimal(18,2) Total
+    nvarchar(1000)(nullable) Notes
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
@@ -58,16 +58,16 @@ erDiagram
     int OrderId
     int ProductId
     int Quantity
-    decimal UnitPrice
-    decimal Discount
-    decimal(nullable) LineTotal "computed"
+    decimal(18,2) UnitPrice
+    decimal(18,2) Discount
+    decimal(30,2)(nullable) LineTotal "computed"
   }
   Product["**Product**"] {
     int Id pk
-    varchar Sku
-    nvarchar Name
-    nvarchar(nullable) Description
-    decimal UnitPrice
+    varchar(50) Sku
+    nvarchar(200) Name
+    nvarchar(max)(nullable) Description
+    decimal(18,2) UnitPrice
     int StockQty
     bit IsActive
     datetime2 CreatedAt

@@ -3,6 +3,6 @@
 erDiagram
   Customers["**Customers**: Contains 'quotes' here"] {
     int CustomerId pk "The 'primary' key"
-    nvarchar Name
+    nvarchar(100) Name
   }
 ```
