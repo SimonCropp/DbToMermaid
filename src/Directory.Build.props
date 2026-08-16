@@ -8,6 +8,5 @@
     <ResolveAssemblyReferencesSilent>true</ResolveAssemblyReferencesSilent>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 </Project>
