@@ -73,6 +73,17 @@ sealed class NullableOrder
     public NullableCustomer? Customer { get; set; }
 }
 
+class Vehicle
+{
+    public int Id { get; set; }
+    public string Make { get; set; } = "";
+}
+
+sealed class Car : Vehicle
+{
+    public int DoorCount { get; set; }
+}
+
 [Owned]
 sealed class StreetAddress
 {
