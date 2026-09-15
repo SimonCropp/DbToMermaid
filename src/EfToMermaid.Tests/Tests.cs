@@ -81,4 +81,19 @@ public class Tests
         await Verify(markdown, extension: "md")
             .AddScrubber(_ => _.Insert(0, '\n'));
     }
+
+    [Test]
+    public async Task WithTpt()
+    {
+        var options = new DbContextOptionsBuilder<WithTptDbContext>()
+            .UseSqlServer("Fake")
+            .Options;
+
+        await using var context = new WithTptDbContext(options);
+
+        var markdown = await EfToMermaid.RenderMarkdown(context.Model);
+
+        await Verify(markdown, extension: "md")
+            .AddScrubber(_ => _.Insert(0, '\n'));
+    }
 }

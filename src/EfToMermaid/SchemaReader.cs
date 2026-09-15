@@ -20,6 +20,8 @@ static class SchemaReader
 
             var directProperties = group
                 .SelectMany(_ => _.GetProperties())
+                // under TPT, inherited properties are mapped to the base type's table
+                .Where(_ => _.GetColumnName(storeObject) is not null)
                 .DistinctBy(_ => _.Name)
                 .Select(_ => BuildColumn(_, storeObject));
 
