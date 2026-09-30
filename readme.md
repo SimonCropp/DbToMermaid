@@ -321,6 +321,17 @@ sealed class NullableOrder
     public NullableCustomer? Customer { get; set; }
 }
 
+class Vehicle
+{
+    public int Id { get; set; }
+    public string Make { get; set; } = "";
+}
+
+sealed class Car : Vehicle
+{
+    public int DoorCount { get; set; }
+}
+
 [Owned]
 sealed class StreetAddress
 {
@@ -328,7 +339,7 @@ sealed class StreetAddress
     public string City { get; set; } = "";
 }
 ```
-<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L81' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L92' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
