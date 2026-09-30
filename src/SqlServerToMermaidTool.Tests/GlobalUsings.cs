@@ -3,4 +3,3 @@ global using CliFx;
 global using CliFx.Infrastructure;
 global using Microsoft.Data.SqlClient;
 global using SqlServerToMermaidTool;
-global using VerifyTests.DiffPlex;
