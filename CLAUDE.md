@@ -33,11 +33,10 @@ SqlServerToMermaidTool        ──→  CLI wrapper (CliFx) around SqlServerToM
 
 ## Testing
 
-- **Framework:** TUnit with Verify (snapshot testing) and DiffPlex
+- **Framework:** TUnit with Verify (snapshot testing)
 - **Snapshots:** `*.verified.md` files are the expected outputs. When rendering changes, update verified files to match
 - **EfToMermaid.Tests** use fake connection strings (no DB needed). Tests requiring resolved metadata (e.g. comments) use `IDesignTimeModel`
 - **SqlServerToMermaid.Tests** use LocalDb for connection-based tests and `ScriptParser` for script-based tests
-- **ModuleInitializer** pattern in each test project initializes Verify/DiffPlex
 
 ## Code Style
 
