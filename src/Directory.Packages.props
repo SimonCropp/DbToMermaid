@@ -10,7 +10,7 @@
     <PackageVersion Include="Microsoft.SqlServer.SqlManagementObjects" Version="181.37.1" />
     <PackageVersion Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="180.117.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.184" />
-    <PackageVersion Include="TUnit" Version="1.72.16" />
-    <PackageVersion Include="Verify.TUnit" Version="33.3.2-beta.1" />
+    <PackageVersion Include="TUnit" Version="1.73.5" />
+    <PackageVersion Include="Verify.TUnit" Version="33.3.2" />
   </ItemGroup>
 </Project>
