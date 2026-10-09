@@ -2,7 +2,7 @@
   Type: CommandException,
   ExitCode: 1,
   ShowHelp: false,
-  Message: Invalid output extension '.txt'. Only .md and .mmd are supported.,
+  Message: Invalid output extension '.txt'. Only .md, .mmd, .svg and .png are supported.,
   StackTrace:
 at RenderCommand.ValidateAndGetOutputFormat(String path)
 at RenderCommand.ExecuteAsync(IConsole console)

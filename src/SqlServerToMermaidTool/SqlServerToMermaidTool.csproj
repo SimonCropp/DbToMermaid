@@ -7,12 +7,14 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <ToolCommandName>sql2mermaid</ToolCommandName>
     <SignAssembly>false</SignAssembly>
-    <Description>CLI tool to generate Mermaid ER diagrams from SQL Server databases or scripts.</Description>
+    <Description>CLI tool to generate Mermaid ER diagrams, as Mermaid, SVG or PNG, from SQL Server databases or scripts.</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CliFx" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
+    <PackageReference Include="Naiad" />
+    <PackageReference Include="Naiad.Skia" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
     <ProjectReference Include="..\SqlServerToMermaid\SqlServerToMermaid.csproj" />
   </ItemGroup>
