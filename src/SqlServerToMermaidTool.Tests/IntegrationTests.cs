@@ -1,6 +1,8 @@
 public class IntegrationTests
 {
-    static SqlInstance instance = new("SqlServerToMermaidTool", (SqlConnection _) => Task.CompletedTask);
+    static SqlInstance instance = new(
+        "SqlServerToMermaidTool",
+        _ => Task.CompletedTask);
 
     [Test]
     public async Task ConnectionString_ToMarkdown()

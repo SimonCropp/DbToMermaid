@@ -1,6 +1,6 @@
 public static class InputResolver
 {
-    static readonly string[] connectionStringKeywords =
+    static string[] connectionStringKeywords =
     [
         "Server=",
         "Data Source=",

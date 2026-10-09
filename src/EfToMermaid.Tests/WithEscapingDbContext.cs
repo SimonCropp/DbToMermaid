@@ -6,7 +6,9 @@ class WithEscapingDbContext(DbContextOptions<WithEscapingDbContext> options) :
         modelBuilder
             .Entity<Customer>(builder =>
             {
-                builder.ToTable("Customers", _ => _.HasComment("Contains \"quotes\" here"));
+                builder.ToTable(
+                    "Customers",
+                    _ => _.HasComment("Contains \"quotes\" here"));
                 builder.HasKey(_ => _.CustomerId);
                 builder.Property(_ => _.CustomerId)
                     .HasColumnType("int")

@@ -6,7 +6,9 @@
         modelBuilder
             .Entity<Customer>(builder =>
             {
-                builder.ToTable("Customers", _ => _.HasComment("Core customer information"));
+                builder.ToTable(
+                    "Customers",
+                    _ => _.HasComment("Core customer information"));
                 builder.HasKey(_ => _.CustomerId);
                 builder.Property(_ => _.CustomerId)
                     .HasColumnType("int")
@@ -21,7 +23,9 @@
         modelBuilder
             .Entity<Order>(builder =>
             {
-                builder.ToTable("Orders", _ => _.HasComment("Customer orders"));
+                builder.ToTable(
+                    "Orders",
+                    _ => _.HasComment("Customer orders"));
                 builder.HasKey(_ => _.OrderId);
                 builder.Property(_ => _.OrderId)
                     .HasColumnType("int")

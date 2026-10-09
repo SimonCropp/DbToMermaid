@@ -39,7 +39,10 @@ static class ScriptParser
         return new(tableList, fkList);
     }
 
-    static void ProcessStatement(TSqlStatement statement, Dictionary<(string Schema, string Name), TableBuilder> tables, List<ForeignKey> foreignKeys)
+    static void ProcessStatement(
+        TSqlStatement statement,
+        Dictionary<(string Schema, string Name), TableBuilder> tables,
+        List<ForeignKey> foreignKeys)
     {
         switch (statement)
         {
@@ -55,7 +58,10 @@ static class ScriptParser
         }
     }
 
-    static void ProcessCreateTable(CreateTableStatement createTable, Dictionary<(string Schema, string Name), TableBuilder> tables, List<ForeignKey> foreignKeys)
+    static void ProcessCreateTable(
+        CreateTableStatement createTable,
+        Dictionary<(string Schema, string Name), TableBuilder> tables,
+        List<ForeignKey> foreignKeys)
     {
         var schemaName = createTable.SchemaObjectName.SchemaIdentifier?.Value ?? "dbo";
         var tableName = createTable.SchemaObjectName.BaseIdentifier.Value;
@@ -75,7 +81,10 @@ static class ScriptParser
         }
     }
 
-    static void ProcessAlterTableAdd(AlterTableAddTableElementStatement alterAdd, Dictionary<(string Schema, string Name), TableBuilder> tables, List<ForeignKey> foreignKeys)
+    static void ProcessAlterTableAdd(
+        AlterTableAddTableElementStatement alterAdd,
+        Dictionary<(string Schema, string Name), TableBuilder> tables,
+        List<ForeignKey> foreignKeys)
     {
         var schemaName = alterAdd.SchemaObjectName.SchemaIdentifier?.Value ?? "dbo";
         var tableName = alterAdd.SchemaObjectName.BaseIdentifier.Value;
@@ -106,7 +115,11 @@ static class ScriptParser
         foreach (var constraint in columnDef.Constraints)
         {
             // A primary key declared on the column itself has no column list: it is that column
-            if (constraint is UniqueConstraintDefinition { IsPrimaryKey: true, Columns.Count: 0 })
+            if (constraint is UniqueConstraintDefinition
+                {
+                    IsPrimaryKey: true,
+                    Columns.Count: 0
+                })
             {
                 builder.PrimaryKeys.Add(column.Name);
                 continue;
@@ -127,9 +140,10 @@ static class ScriptParser
                 }
                 break;
             case ForeignKeyConstraintDefinition foreignKey:
-                var name = foreignKey.ConstraintIdentifier?.Value ?? $"fk_{tableName}_{foreignKey.ReferenceTableName.BaseIdentifier.Value}";
-                var schema = foreignKey.ReferenceTableName.SchemaIdentifier?.Value ?? "dbo";
-                var table = foreignKey.ReferenceTableName.BaseIdentifier.Value;
+                var referenceTableName = foreignKey.ReferenceTableName;
+                var name = foreignKey.ConstraintIdentifier?.Value ?? $"fk_{tableName}_{referenceTableName.BaseIdentifier.Value}";
+                var schema = referenceTableName.SchemaIdentifier?.Value ?? "dbo";
+                var table = referenceTableName.BaseIdentifier.Value;
                 foreignKeys.Add(new(name, schemaName, tableName, schema, table));
                 break;
         }
@@ -275,5 +289,4 @@ static class ScriptParser
         // Default to nullable if not specified. Primary key columns are made not null by TableBuilder
         return true;
     }
-
 }

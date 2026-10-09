@@ -13,15 +13,17 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
                 builder.Property(_ => _.Name)
                     .HasColumnType("nvarchar(50)")
                     .IsRequired();
-                builder.OwnsOne(_ => _.ShippingAddress, sa =>
-                {
-                    sa.Property(_ => _.Street)
-                        .HasColumnType("nvarchar(100)")
-                        .IsRequired();
-                    sa.Property(_ => _.City)
-                        .HasColumnType("nvarchar(50)")
-                        .IsRequired();
-                });
+                builder.OwnsOne(
+                    _ => _.ShippingAddress,
+                    sa =>
+                    {
+                        sa.Property(_ => _.Street)
+                            .HasColumnType("nvarchar(100)")
+                            .IsRequired();
+                        sa.Property(_ => _.City)
+                            .HasColumnType("nvarchar(50)")
+                            .IsRequired();
+                    });
             });
 
         modelBuilder

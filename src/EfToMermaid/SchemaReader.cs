@@ -69,7 +69,7 @@ static class SchemaReader
         return new(tables, foreignKeys);
     }
 
-    private static Column BuildColumn(IProperty property, StoreObjectIdentifier storeObject)
+    static Column BuildColumn(IProperty property, StoreObjectIdentifier storeObject)
     {
         var name = property.GetColumnName(storeObject) ?? property.Name;
         var storeType = property.GetColumnType(storeObject);
