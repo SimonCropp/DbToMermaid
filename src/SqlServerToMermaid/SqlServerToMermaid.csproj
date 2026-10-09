@@ -9,6 +9,8 @@
     <PackageReference Include="Microsoft.Data.SqlClient" />
     <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" />
     <PackageReference Include="Microsoft.SqlServer.TransactSql.ScriptDom" />
+    <PackageReference Include="Naiad" />
+    <PackageReference Include="Naiad.Skia" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
     <Compile Include="..\Shared\*.cs" />
   </ItemGroup>

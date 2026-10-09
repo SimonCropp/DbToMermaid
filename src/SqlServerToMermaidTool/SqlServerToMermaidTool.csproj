@@ -13,8 +13,6 @@
   <ItemGroup>
     <PackageReference Include="CliFx" />
     <PackageReference Include="Microsoft.Data.SqlClient" />
-    <PackageReference Include="Naiad" />
-    <PackageReference Include="Naiad.Skia" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
     <ProjectReference Include="..\SqlServerToMermaid\SqlServerToMermaid.csproj" />
   </ItemGroup>

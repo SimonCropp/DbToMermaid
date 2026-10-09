@@ -122,38 +122,48 @@ public partial class RenderCommand : ICommand
         await task;
     }
 
-    async Task RenderSvg(string path, InputType inputType)
-    {
-        var mermaid = await RenderMermaid(inputType);
-        await File.WriteAllTextAsync(path, Mermaid.Render(mermaid));
-    }
-
-    async Task RenderPng(string path, InputType inputType)
-    {
-        var mermaid = await RenderMermaid(inputType);
-        await File.WriteAllBytesAsync(path, SkiaRenderer.RenderPng(mermaid));
-    }
-
-    Task<string> RenderMermaid(InputType inputType) =>
+    Task RenderSvg(string path, InputType inputType) =>
         inputType switch
         {
-            InputType.ConnectionString => RenderConnectionMermaid(),
-            InputType.FilePath => RenderFileMermaid(),
-            InputType.RawSql => SqlServerToMermaid.RenderFromScript(Input),
+            InputType.ConnectionString => RenderConnectionSvg(path),
+            InputType.FilePath => RenderFileSvg(path),
+            InputType.RawSql => SqlServerToMermaid.RenderSvgToFileFromScript(Input, path),
             _ => throw new("Unexpected input type")
         };
 
-    async Task<string> RenderConnectionMermaid()
+    Task RenderPng(string path, InputType inputType) =>
+        inputType switch
+        {
+            InputType.ConnectionString => RenderConnectionPng(path),
+            InputType.FilePath => RenderFilePng(path),
+            InputType.RawSql => SqlServerToMermaid.RenderPngToFileFromScript(Input, path),
+            _ => throw new("Unexpected input type")
+        };
+
+    async Task RenderConnectionSvg(string path)
     {
         await using var connection = new SqlConnection(Input);
         await connection.OpenAsync();
-        return await SqlServerToMermaid.Render(connection);
+        await SqlServerToMermaid.RenderSvgToFile(connection, path);
     }
 
-    async Task<string> RenderFileMermaid()
+    async Task RenderConnectionPng(string path)
+    {
+        await using var connection = new SqlConnection(Input);
+        await connection.OpenAsync();
+        await SqlServerToMermaid.RenderPngToFile(connection, path);
+    }
+
+    async Task RenderFileSvg(string path)
     {
         var script = await File.ReadAllTextAsync(Input);
-        return await SqlServerToMermaid.RenderFromScript(script);
+        await SqlServerToMermaid.RenderSvgToFileFromScript(script, path);
+    }
+
+    async Task RenderFilePng(string path)
+    {
+        var script = await File.ReadAllTextAsync(Input);
+        await SqlServerToMermaid.RenderPngToFileFromScript(script, path);
     }
 
     async Task RenderConnectionMarkdown(TextWriter writer)

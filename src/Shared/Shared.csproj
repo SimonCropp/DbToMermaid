@@ -5,6 +5,8 @@
     </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Naiad" />
+    <PackageReference Include="Naiad.Skia" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
   </ItemGroup>
 </Project>
