@@ -1,7 +1,7 @@
 ﻿```mermaid
 erDiagram
   Items["**Items**"] {
-    int Id
+    int Id pk
     nvarchar(100) Name
   }
   NewTable["**NewTable**"] {

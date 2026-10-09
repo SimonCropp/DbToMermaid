@@ -14,6 +14,7 @@
             var columns = Columns
                 .OrderBy(_ => !PrimaryKeys.Contains(_.Name))
                 .ThenBy(_ => _.Ordinal)
+                .Select(ApplyPrimaryKey)
                 .Select(ApplyComment)
                 .ToList();
             return new(Schema, Name, columns, PrimaryKeys, Comment);
@@ -25,6 +26,20 @@
                 .ToList();
             return new(Schema, Name, columns, null, Comment);
         }
+    }
+
+    // A primary key column is never nullable, however the key was declared and whatever the column says
+    Column ApplyPrimaryKey(Column column)
+    {
+        if (PrimaryKeys.Contains(column.Name))
+        {
+            return column with
+            {
+                IsNullable = false
+            };
+        }
+
+        return column;
     }
 
     Column ApplyComment(Column column)

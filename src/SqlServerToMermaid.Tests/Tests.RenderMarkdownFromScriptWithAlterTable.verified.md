@@ -1,11 +1,11 @@
 ﻿```mermaid
 erDiagram
   Child["**Child**"] {
-    int Id
+    int Id pk
     int(nullable) ParentId
   }
   Parent["**Parent**"] {
-    int Id
+    int Id pk
   }
   Parent ||--o{ Child : "FK_Child_Parent"
 ```

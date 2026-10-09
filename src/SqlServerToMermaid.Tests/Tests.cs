@@ -473,6 +473,32 @@ public class Tests
     }
 
     [Test]
+    public async Task RenderMarkdownFromScriptWithColumnLevelConstraints()
+    {
+        var script = """
+            create table Parent
+            (
+                Id int constraint PK_Parent primary key,
+                Name nvarchar(100) not null
+            );
+
+            create table Child
+            (
+                Name nvarchar(100) not null,
+                ParentId int not null references Parent(Id),
+                OwnerId int null constraint FK_Child_Owner references Parent(Id)
+            );
+
+            alter table Child
+            add Id int not null primary key;
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
     public async Task RenderMarkdownFromScriptWithComputedAndComment()
     {
         var script = """

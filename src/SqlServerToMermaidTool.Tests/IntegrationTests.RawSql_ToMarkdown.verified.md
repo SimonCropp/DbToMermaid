@@ -1,7 +1,7 @@
 ﻿```mermaid
 erDiagram
   Orders["**Orders**"] {
-    int Id
+    int Id pk
     decimal(18,2) Total
   }
 ```
