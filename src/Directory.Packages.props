@@ -13,7 +13,6 @@
     <PackageVersion Include="Naiad.Skia" Version="1.5.1" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.184" />
     <PackageVersion Include="TUnit" Version="1.73.19" />
-    <PackageVersion Include="Verify.ImageMagick" Version="4.0.0" />
     <PackageVersion Include="Verify.TUnit" Version="33.3.2" />
   </ItemGroup>
 </Project>
