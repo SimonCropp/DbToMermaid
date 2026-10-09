@@ -1,7 +1,7 @@
 ﻿```mermaid
 erDiagram
   Customers["**Customers**: Core customer information"] {
-    int CustomerId "Auto-generated identifier"
+    int CustomerId pk "Auto-generated identifier"
     nvarchar(100) Name "Customer full name"
     varchar(255)(nullable) Email
   }

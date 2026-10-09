@@ -1,12 +1,12 @@
 ﻿```mermaid
 erDiagram
   Company["**Company**"] {
-    int Id
+    int Id pk
     nvarchar(200) Name
     datetime2 CreatedAt
   }
   Employee["**Employee**"] {
-    int Id
+    int Id pk
     nvarchar(100) FirstName
     nvarchar(100) LastName
     int CompanyId
