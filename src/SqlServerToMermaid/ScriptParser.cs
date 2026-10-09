@@ -64,11 +64,9 @@ static class ScriptParser
         var builder = new TableBuilder(schemaName, tableName);
         tables[key] = builder;
 
-        var ordinal = 0;
         foreach (var columnDef in createTable.Definition.ColumnDefinitions)
         {
-            var column = BuildColumn(columnDef, ordinal++);
-            builder.Columns.Add(column);
+            AddColumn(columnDef, schemaName, tableName, builder, foreignKeys);
         }
 
         foreach (var constraint in createTable.Definition.TableConstraints)
@@ -96,8 +94,25 @@ static class ScriptParser
 
         foreach (var columnDef in alterAdd.Definition.ColumnDefinitions)
         {
-            var column = BuildColumn(columnDef, builder.Columns.Count);
-            builder.Columns.Add(column);
+            AddColumn(columnDef, schemaName, tableName, builder, foreignKeys);
+        }
+    }
+
+    static void AddColumn(ColumnDefinition columnDef, string schemaName, string tableName, TableBuilder builder, List<ForeignKey> foreignKeys)
+    {
+        var column = BuildColumn(columnDef, builder.Columns.Count);
+        builder.Columns.Add(column);
+
+        foreach (var constraint in columnDef.Constraints)
+        {
+            // A primary key declared on the column itself has no column list: it is that column
+            if (constraint is UniqueConstraintDefinition { IsPrimaryKey: true, Columns.Count: 0 })
+            {
+                builder.PrimaryKeys.Add(column.Name);
+                continue;
+            }
+
+            ProcessConstraint(constraint, schemaName, tableName, builder, foreignKeys);
         }
     }
 
@@ -257,16 +272,7 @@ static class ScriptParser
             }
         }
 
-        // Check if column is part of primary key (implicitly not null)
-        foreach (var constraint in columnDef.Constraints)
-        {
-            if (constraint is UniqueConstraintDefinition { IsPrimaryKey: true })
-            {
-                return false;
-            }
-        }
-
-        // Default to nullable if not specified
+        // Default to nullable if not specified. Primary key columns are made not null by TableBuilder
         return true;
     }
 
