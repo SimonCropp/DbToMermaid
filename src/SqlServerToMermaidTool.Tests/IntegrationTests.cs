@@ -121,6 +121,126 @@ public class IntegrationTests
     }
 
     [Test]
+    public async Task ConnectionString_ToSvg()
+    {
+        await using var database = await instance.Build();
+        await using (var command = database.Connection.CreateCommand())
+        {
+            command.CommandText =
+                """
+                create table Company
+                (
+                    Id   int primary key,
+                    Name nvarchar(200) not null
+                );
+
+                create table Employee
+                (
+                    Id        int primary key,
+                    FirstName nvarchar(100) not null,
+                    CompanyId int           not null,
+
+                    constraint FK_Employee_Company
+                      foreign key (CompanyId)
+                      references Company(Id)
+                );
+                """;
+            await command.ExecuteNonQueryAsync();
+        }
+
+        using var outputPath = new TempFile(extension: ".svg");
+        var console = new FakeInMemoryConsole();
+        var cmd = new RenderCommand
+        {
+            Input = database.Connection.ConnectionString,
+            Output = outputPath
+        };
+
+        await cmd.ExecuteAsync(console);
+
+        await VerifyFile(outputPath);
+    }
+
+    [Test]
+    public async Task SqlFile_ToSvg()
+    {
+        using var sqlPath = new TempFile(extension: ".sql");
+        using var outputPath = new TempFile(extension: ".svg");
+        await File.WriteAllTextAsync(sqlPath,
+            """
+            create table Products
+            (
+                Id    int primary key,
+                Name  nvarchar(200) not null,
+                Price decimal(18,2) not null
+            );
+            """);
+
+        var console = new FakeInMemoryConsole();
+        var cmd = new RenderCommand
+        {
+            Input = sqlPath,
+            Output = outputPath
+        };
+
+        await cmd.ExecuteAsync(console);
+
+        await VerifyFile(outputPath);
+    }
+
+    [Test]
+    public async Task RawSql_ToSvg()
+    {
+        using var outputPath = new TempFile(extension: ".svg");
+        var console = new FakeInMemoryConsole();
+        var cmd = new RenderCommand
+        {
+            Input = relatedTablesSql,
+            Output = outputPath
+        };
+
+        await cmd.ExecuteAsync(console);
+
+        await VerifyFile(outputPath);
+    }
+
+    [Test]
+    public async Task RawSql_ToPng()
+    {
+        using var outputPath = new TempFile(extension: ".png");
+        var console = new FakeInMemoryConsole();
+        var cmd = new RenderCommand
+        {
+            Input = relatedTablesSql,
+            Output = outputPath
+        };
+
+        await cmd.ExecuteAsync(console);
+
+        await VerifyFile(outputPath);
+    }
+
+    const string relatedTablesSql =
+        """
+        create table Customers
+        (
+            Id   int primary key,
+            Name nvarchar(200) not null
+        );
+
+        create table Orders
+        (
+            Id         int primary key,
+            Total      decimal(18,2) not null,
+            CustomerId int           not null,
+
+            constraint FK_Orders_Customers
+              foreign key (CustomerId)
+              references Customers(Id)
+        );
+        """;
+
+    [Test]
     public async Task CustomNewLine()
     {
         using var outputPath = new TempFile(extension: ".mmd");
