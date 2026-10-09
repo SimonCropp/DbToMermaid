@@ -1,4 +1,4 @@
-﻿// ReSharper disable UnusedVariable
+// ReSharper disable UnusedVariable
 public class Tests
 {
     static SqlInstance instance = new("SqlServerToMermaid", (SqlConnection _) => Task.CompletedTask);
@@ -14,6 +14,29 @@ public class Tests
         #region SqlServerUsageFile
 
         await SqlServerToMermaid.RenderMarkdownToFile(sqlConnection, "diagram.md");
+
+        #endregion
+
+        #region SqlServerSvgPngUsage
+
+        var svg = await SqlServerToMermaid.RenderSvg(sqlConnection);
+        var png = await SqlServerToMermaid.RenderPng(sqlConnection);
+
+        await SqlServerToMermaid.RenderSvgToFile(sqlConnection, "diagram.svg");
+        await SqlServerToMermaid.RenderPngToFile(sqlConnection, "diagram.png");
+
+        #endregion
+    }
+
+    static async Task ScriptSvgPngUsage(string script)
+    {
+        #region SqlServerScriptSvgPngUsage
+
+        var svg = await SqlServerToMermaid.RenderSvgFromScript(script);
+        var png = await SqlServerToMermaid.RenderPngFromScript(script);
+
+        await SqlServerToMermaid.RenderSvgToFileFromScript(script, "diagram.svg");
+        await SqlServerToMermaid.RenderPngToFileFromScript(script, "diagram.png");
 
         #endregion
     }
@@ -624,5 +647,71 @@ public class Tests
         var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
 
         await Verify(markdown, extension: "md");
+    }
+
+    const string relatedTablesScript =
+        """
+        create table Company
+        (
+            Id   int primary key,
+            Name nvarchar(200) not null
+        );
+
+        create table Employee
+        (
+            Id        int primary key,
+            FirstName nvarchar(100) not null,
+            CompanyId int           not null,
+
+            constraint FK_Employee_Company
+              foreign key (CompanyId)
+              references Company(Id)
+        );
+        """;
+
+    [Test]
+    public async Task RenderSvgFromScript()
+    {
+        var svg = await SqlServerToMermaid.RenderSvgFromScript(relatedTablesScript);
+
+        await Verify(svg, extension: "svg");
+    }
+
+    [Test]
+    public async Task RenderPngFromScript()
+    {
+        var png = await SqlServerToMermaid.RenderPngFromScript(relatedTablesScript);
+
+        await Verify(png, extension: "png");
+    }
+
+    [Test]
+    public async Task RenderSvg()
+    {
+        await using var database = await instance.Build();
+        await using (var command = database.Connection.CreateCommand())
+        {
+            command.CommandText = relatedTablesScript;
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var svg = await SqlServerToMermaid.RenderSvg(database.Connection);
+
+        await Verify(svg, extension: "svg");
+    }
+
+    [Test]
+    public async Task RenderPng()
+    {
+        await using var database = await instance.Build();
+        await using (var command = database.Connection.CreateCommand())
+        {
+            command.CommandText = relatedTablesScript;
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var png = await SqlServerToMermaid.RenderPng(database.Connection);
+
+        await Verify(png, extension: "png");
     }
 }

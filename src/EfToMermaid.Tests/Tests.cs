@@ -1,5 +1,19 @@
+// ReSharper disable UnusedVariable
 public class Tests
 {
+    static async Task SvgPngUsage(Microsoft.EntityFrameworkCore.Metadata.IModel model)
+    {
+        #region EfSvgPngUsage
+
+        var svg = await EfToMermaid.RenderSvg(model);
+        var png = await EfToMermaid.RenderPng(model);
+
+        await EfToMermaid.RenderSvgToFile(model, "diagram.svg");
+        await EfToMermaid.RenderPngToFile(model, "diagram.png");
+
+        #endregion
+    }
+
     [Test]
     public async Task RenderMarkdown()
     {
@@ -95,5 +109,33 @@ public class Tests
 
         await Verify(markdown, extension: "md")
             .AddScrubber(_ => _.Insert(0, '\n'));
+    }
+
+    [Test]
+    public async Task RenderSvg()
+    {
+        var options = new DbContextOptionsBuilder<SampleDbContext>()
+            .UseSqlServer("Fake")
+            .Options;
+
+        await using var context = new SampleDbContext(options);
+
+        var svg = await EfToMermaid.RenderSvg(context.Model);
+
+        await Verify(svg, extension: "svg");
+    }
+
+    [Test]
+    public async Task RenderPng()
+    {
+        var options = new DbContextOptionsBuilder<SampleDbContext>()
+            .UseSqlServer("Fake")
+            .Options;
+
+        await using var context = new SampleDbContext(options);
+
+        var png = await EfToMermaid.RenderPng(context.Model);
+
+        await Verify(png, extension: "png");
     }
 }

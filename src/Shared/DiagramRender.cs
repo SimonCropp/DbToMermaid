@@ -33,6 +33,30 @@ static class DiagramRender
         await Render(writer, database, cancel);
     }
 
+    public static async Task<string> RenderSvg(Database database, Cancel cancel)
+    {
+        var mermaid = await Render(database, cancel);
+        return Mermaid.Render(mermaid);
+    }
+
+    public static async Task RenderSvgToFile(Database database, string path, Cancel cancel)
+    {
+        var svg = await RenderSvg(database, cancel);
+        await File.WriteAllTextAsync(path, svg, cancel);
+    }
+
+    public static async Task<byte[]> RenderPng(Database database, Cancel cancel)
+    {
+        var mermaid = await Render(database, cancel);
+        return ImageSharpRenderer.RenderPng(mermaid);
+    }
+
+    public static async Task RenderPngToFile(Database database, string path, Cancel cancel)
+    {
+        var png = await RenderPng(database, cancel);
+        await File.WriteAllBytesAsync(path, png, cancel);
+    }
+
     public static async Task Render(TextWriter writer, Database database, Cancel cancel)
     {
         await writer.WriteLineAsync("erDiagram");

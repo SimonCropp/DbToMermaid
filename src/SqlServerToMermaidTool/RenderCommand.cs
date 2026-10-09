@@ -10,39 +10,28 @@ public partial class RenderCommand : ICommand
     [CommandOption(
         "output",
         'o',
-        Description = "Output file path (.md or .mmd). Default: schema.md")]
+        Description = "Output file path (.md, .mmd, .svg or .png). Default: schema.md")]
     public string Output { get; set; } = "schema.md";
 
     [CommandOption(
         "newline",
         'n',
-        Description = @"Custom newline sequence (e.g., \n or \r\n)")]
+        Description = @"Custom newline sequence (e.g., \n or \r\n). Applies to .md and .mmd output")]
     public string? NewLine { get; set; }
 
     public async ValueTask ExecuteAsync(IConsole console)
     {
-        var useMarkdown = ValidateAndGetOutputFormat(Output);
+        var format = ValidateAndGetOutputFormat(Output);
         var inputType = InputResolver.Resolve(Input);
         var fullPath = Path.GetFullPath(Output);
 
         try
         {
-            await using var writer = new StreamWriter(fullPath);
-
-            if (NewLine is not null)
+            var task = format switch
             {
-                writer.NewLine = ParseNewLine(NewLine);
-            }
-
-            var task = (inputType, useMarkdown) switch
-            {
-                (InputType.ConnectionString, true) => RenderConnectionMarkdown(writer),
-                (InputType.ConnectionString, false) => RenderConnectionRaw(writer),
-                (InputType.FilePath, true) => RenderFileMarkdown(writer),
-                (InputType.FilePath, false) => RenderFileRaw(writer),
-                (InputType.RawSql, true) => RenderScriptMarkdown(writer, Input),
-                (InputType.RawSql, false) => RenderScriptRaw(writer, Input),
-                _ => throw new("Unexpected input/output combination")
+                OutputFormat.Svg => RenderSvg(fullPath, inputType),
+                OutputFormat.Png => RenderPng(fullPath, inputType),
+                _ => RenderText(fullPath, inputType, format == OutputFormat.Markdown)
             };
             await task;
 
@@ -78,6 +67,10 @@ public partial class RenderCommand : ICommand
         {
             throw new CommandException(exception.Message);
         }
+        catch (MermaidException exception)
+        {
+            throw new CommandException($"Failed to render diagram: {exception.Message}");
+        }
     }
 
     static bool IsTimeoutError(SqlException exception) =>
@@ -88,15 +81,17 @@ public partial class RenderCommand : ICommand
         // ERROR_SHARING_VIOLATION and ERROR_LOCK_VIOLATION
         exception.HResult is unchecked((int)0x80070020) or unchecked((int)0x80070021);
 
-    static bool ValidateAndGetOutputFormat(string path)
+    static OutputFormat ValidateAndGetOutputFormat(string path)
     {
         var extension = Path.GetExtension(path).ToLowerInvariant();
         return extension switch
         {
-            ".md" => true,
-            ".mmd" => false,
+            ".md" => OutputFormat.Markdown,
+            ".mmd" => OutputFormat.Mermaid,
+            ".svg" => OutputFormat.Svg,
+            ".png" => OutputFormat.Png,
             _ => throw new CommandException(
-                $"Invalid output extension '{extension}'. Only .md and .mmd are supported.")
+                $"Invalid output extension '{extension}'. Only .md, .mmd, .svg and .png are supported.")
         };
     }
 
@@ -104,6 +99,72 @@ public partial class RenderCommand : ICommand
         newLine
             .Replace("\\r", "\r")
             .Replace("\\n", "\n");
+
+    async Task RenderText(string path, InputType inputType, bool useMarkdown)
+    {
+        await using var writer = new StreamWriter(path);
+
+        if (NewLine is not null)
+        {
+            writer.NewLine = ParseNewLine(NewLine);
+        }
+
+        var task = (inputType, useMarkdown) switch
+        {
+            (InputType.ConnectionString, true) => RenderConnectionMarkdown(writer),
+            (InputType.ConnectionString, false) => RenderConnectionRaw(writer),
+            (InputType.FilePath, true) => RenderFileMarkdown(writer),
+            (InputType.FilePath, false) => RenderFileRaw(writer),
+            (InputType.RawSql, true) => RenderScriptMarkdown(writer, Input),
+            (InputType.RawSql, false) => RenderScriptRaw(writer, Input),
+            _ => throw new("Unexpected input/output combination")
+        };
+        await task;
+    }
+
+    Task RenderSvg(string path, InputType inputType) =>
+        inputType switch
+        {
+            InputType.ConnectionString => RenderConnectionSvg(path),
+            InputType.FilePath => RenderFileSvg(path),
+            InputType.RawSql => SqlServerToMermaid.RenderSvgToFileFromScript(Input, path),
+            _ => throw new("Unexpected input type")
+        };
+
+    Task RenderPng(string path, InputType inputType) =>
+        inputType switch
+        {
+            InputType.ConnectionString => RenderConnectionPng(path),
+            InputType.FilePath => RenderFilePng(path),
+            InputType.RawSql => SqlServerToMermaid.RenderPngToFileFromScript(Input, path),
+            _ => throw new("Unexpected input type")
+        };
+
+    async Task RenderConnectionSvg(string path)
+    {
+        await using var connection = new SqlConnection(Input);
+        await connection.OpenAsync();
+        await SqlServerToMermaid.RenderSvgToFile(connection, path);
+    }
+
+    async Task RenderConnectionPng(string path)
+    {
+        await using var connection = new SqlConnection(Input);
+        await connection.OpenAsync();
+        await SqlServerToMermaid.RenderPngToFile(connection, path);
+    }
+
+    async Task RenderFileSvg(string path)
+    {
+        var script = await File.ReadAllTextAsync(Input);
+        await SqlServerToMermaid.RenderSvgToFileFromScript(script, path);
+    }
+
+    async Task RenderFilePng(string path)
+    {
+        var script = await File.ReadAllTextAsync(Input);
+        await SqlServerToMermaid.RenderPngToFileFromScript(script, path);
+    }
 
     async Task RenderConnectionMarkdown(TextWriter writer)
     {

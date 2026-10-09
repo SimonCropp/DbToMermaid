@@ -71,7 +71,7 @@ create table Manager
 );
 -- rest of schema omitted from docs
 ```
-<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L45-L89' title='Snippet source file'>snippet source</a> | <a href='#snippet-SampleSchema' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L68-L112' title='Snippet source file'>snippet source</a> | <a href='#snippet-SampleSchema' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -190,13 +190,48 @@ var script = """
 
 var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
 ```
-<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L23-L34' title='Snippet source file'>snippet source</a> | <a href='#snippet-SqlServerScriptUsage' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L46-L57' title='Snippet source file'>snippet source</a> | <a href='#snippet-SqlServerScriptUsage' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
+
+
+### SVG and PNG
+
+Diagrams can be rendered to SVG or PNG, using [Naiad](https://github.com/Papyrine/Naiad), instead of Mermaid text:
+
+<!-- snippet: SqlServerSvgPngUsage -->
+<a id='snippet-SqlServerSvgPngUsage'></a>
+```cs
+var svg = await SqlServerToMermaid.RenderSvg(sqlConnection);
+var png = await SqlServerToMermaid.RenderPng(sqlConnection);
+
+await SqlServerToMermaid.RenderSvgToFile(sqlConnection, "diagram.svg");
+await SqlServerToMermaid.RenderPngToFile(sqlConnection, "diagram.png");
+```
+<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L20-L28' title='Snippet source file'>snippet source</a> | <a href='#snippet-SqlServerSvgPngUsage' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Or from a SQL script:
+
+<!-- snippet: SqlServerScriptSvgPngUsage -->
+<a id='snippet-SqlServerScriptSvgPngUsage'></a>
+```cs
+var svg = await SqlServerToMermaid.RenderSvgFromScript(script);
+var png = await SqlServerToMermaid.RenderPngFromScript(script);
+
+await SqlServerToMermaid.RenderSvgToFileFromScript(script, "diagram.svg");
+await SqlServerToMermaid.RenderPngToFileFromScript(script, "diagram.png");
+```
+<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L33-L41' title='Snippet source file'>snippet source</a> | <a href='#snippet-SqlServerScriptSvgPngUsage' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Result:
+
+<img src="/src/SqlServerToMermaid.Tests/Tests.RenderPng.verified.png">
 
 
 ## SqlServerToMermaidTool (CLI)
 
-Command-line tool for generating Mermaid ER diagrams from SQL Server databases or scripts.
+Command-line tool for generating Mermaid ER diagrams, as Mermaid, SVG or PNG, from SQL Server databases or scripts.
 
 ### Installation
 
@@ -221,17 +256,25 @@ sql2mermaid path/to/schema.sql -o diagram.mmd
 sql2mermaid "create table Users (Id int primary key, Name nvarchar(100))" -o users.md
 ```
 
+**To an image:**
+```bash
+sql2mermaid path/to/schema.sql -o diagram.svg
+sql2mermaid path/to/schema.sql -o diagram.png
+```
+
 ### Options
 
 | Option | Short | Description | Default |
 |--------|-------|-------------|---------|
-| `--output` | `-o` | Output file path (`.md` or `.mmd`) | `schema.md` |
-| `--newline` | `-n` | Custom newline sequence (e.g., `\n` or `\r\n`) | System default |
+| `--output` | `-o` | Output file path (`.md`, `.mmd`, `.svg` or `.png`) | `schema.md` |
+| `--newline` | `-n` | Custom newline sequence (e.g., `\n` or `\r\n`). Applies to `.md` and `.mmd` output | System default |
 
 ### Output Formats
 
 - `.md` - Markdown with mermaid code block (uses `RenderMarkdown`)
 - `.mmd` - Raw mermaid diagram (uses `Render`)
+- `.svg` - SVG image (uses `RenderSvgToFile`)
+- `.png` - PNG image (uses `RenderPngToFile`)
 
 
 ## EfToMermaid
@@ -357,7 +400,7 @@ await using var context = new SampleDbContext(options);
 
 var markdown = await EfToMermaid.RenderMarkdown(context.Model);
 ```
-<sup><a href='/src/EfToMermaid.Tests/Tests.cs#L6-L17' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfUsage' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/EfToMermaid.Tests/Tests.cs#L20-L31' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfUsage' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -379,6 +422,27 @@ erDiagram
   Customers ||--o{ Orders : "FK_Orders_Customers"
 ```
 <!-- endInclude -->
+
+
+### SVG and PNG
+
+Diagrams can be rendered to SVG or PNG, using [Naiad](https://github.com/Papyrine/Naiad), instead of Mermaid text:
+
+<!-- snippet: EfSvgPngUsage -->
+<a id='snippet-EfSvgPngUsage'></a>
+```cs
+var svg = await EfToMermaid.RenderSvg(model);
+var png = await EfToMermaid.RenderPng(model);
+
+await EfToMermaid.RenderSvgToFile(model, "diagram.svg");
+await EfToMermaid.RenderPngToFile(model, "diagram.png");
+```
+<sup><a href='/src/EfToMermaid.Tests/Tests.cs#L6-L14' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfSvgPngUsage' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+Result:
+
+<img src="/src/EfToMermaid.Tests/Tests.RenderPng.verified.png">
 
 
 ## Features
