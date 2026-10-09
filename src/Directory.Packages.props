@@ -10,7 +10,7 @@
     <PackageVersion Include="Microsoft.SqlServer.SqlManagementObjects" Version="181.37.1" />
     <PackageVersion Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="180.117.0" />
     <PackageVersion Include="Naiad" Version="1.5.1" />
-    <PackageVersion Include="Naiad.Skia" Version="1.5.1" />
+    <PackageVersion Include="Naiad.ImageSharp" Version="1.5.1" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.184" />
     <PackageVersion Include="TUnit" Version="1.73.19" />
     <PackageVersion Include="Verify.TUnit" Version="33.3.2" />

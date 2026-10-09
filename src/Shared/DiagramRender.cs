@@ -48,7 +48,7 @@ static class DiagramRender
     public static async Task<byte[]> RenderPng(Database database, Cancel cancel)
     {
         var mermaid = await Render(database, cancel);
-        return SkiaRenderer.RenderPng(mermaid);
+        return ImageSharpRenderer.RenderPng(mermaid);
     }
 
     public static async Task RenderPngToFile(Database database, string path, Cancel cancel)

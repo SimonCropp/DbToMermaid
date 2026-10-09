@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="Naiad" />
-    <PackageReference Include="Naiad.Skia" />
+    <PackageReference Include="Naiad.ImageSharp" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
     <Compile Include="..\Shared\*.cs"/>
   </ItemGroup>
