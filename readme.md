@@ -304,15 +304,17 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
                 builder.Property(_ => _.Name)
                     .HasColumnType("nvarchar(50)")
                     .IsRequired();
-                builder.OwnsOne(_ => _.ShippingAddress, sa =>
-                {
-                    sa.Property(_ => _.Street)
-                        .HasColumnType("nvarchar(100)")
-                        .IsRequired();
-                    sa.Property(_ => _.City)
-                        .HasColumnType("nvarchar(50)")
-                        .IsRequired();
-                });
+                builder.OwnsOne(
+                    _ => _.ShippingAddress,
+                    sa =>
+                    {
+                        sa.Property(_ => _.Street)
+                            .HasColumnType("nvarchar(100)")
+                            .IsRequired();
+                        sa.Property(_ => _.City)
+                            .HasColumnType("nvarchar(50)")
+                            .IsRequired();
+                    });
             });
 
         modelBuilder
@@ -382,7 +384,7 @@ sealed class StreetAddress
     public string City { get; set; } = "";
 }
 ```
-<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L92' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/EfToMermaid.Tests/Model.cs#L1-L94' title='Snippet source file'>snippet source</a> | <a href='#snippet-Model.cs' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
