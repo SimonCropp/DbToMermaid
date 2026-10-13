@@ -15,12 +15,12 @@ class SampleDbContext(DbContextOptions<SampleDbContext> options) :
                     .IsRequired();
                 builder.OwnsOne(
                     _ => _.ShippingAddress,
-                    sa =>
+                    _ =>
                     {
-                        sa.Property(_ => _.Street)
+                        _.Property(_ => _.Street)
                             .HasColumnType("nvarchar(100)")
                             .IsRequired();
-                        sa.Property(_ => _.City)
+                        _.Property(_ => _.City)
                             .HasColumnType("nvarchar(50)")
                             .IsRequired();
                     });
