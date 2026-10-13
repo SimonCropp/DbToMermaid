@@ -9,8 +9,8 @@
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.10.1" />
     <PackageVersion Include="Microsoft.SqlServer.SqlManagementObjects" Version="181.37.1" />
     <PackageVersion Include="Microsoft.SqlServer.TransactSql.ScriptDom" Version="180.117.0" />
-    <PackageVersion Include="Naiad" Version="2.0.0" />
-    <PackageVersion Include="Naiad.ImageSharp" Version="2.0.0" />
+    <PackageVersion Include="Naiad" Version="2.0.1" />
+    <PackageVersion Include="Naiad.ImageSharp" Version="2.0.1" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.184" />
     <PackageVersion Include="TUnit" Version="1.74.0" />
     <PackageVersion Include="Verify.TUnit" Version="33.3.3" />
