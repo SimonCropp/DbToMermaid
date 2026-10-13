@@ -1,63 +1,63 @@
 static class DiagramRender
 {
-    public static async Task RenderMarkdown(TextWriter writer, Database database, Cancel cancel)
+    public static async Task RenderMarkdown(TextWriter writer, Database database, bool namesOnly, Cancel cancel)
     {
         await writer.WriteLineAsync("```mermaid");
-        await Render(writer, database, cancel);
+        await Render(writer, database, namesOnly, cancel);
         await writer.WriteAsync("```");
     }
 
-    public static async Task<string> RenderMarkdown(Database database, Cancel cancel)
+    public static async Task<string> RenderMarkdown(Database database, bool namesOnly, Cancel cancel)
     {
         await using var writer = new StringWriter();
-        await RenderMarkdown(writer, database, cancel);
+        await RenderMarkdown(writer, database, namesOnly, cancel);
         return writer.ToString();
     }
 
-    public static async Task RenderMarkdownToFile(Database database, string path, Cancel cancel)
+    public static async Task RenderMarkdownToFile(Database database, string path, bool namesOnly, Cancel cancel)
     {
         await using var writer = File.CreateText(path);
-        await RenderMarkdown(writer, database, cancel);
+        await RenderMarkdown(writer, database, namesOnly, cancel);
     }
 
-    public static async Task<string> Render(Database database, Cancel cancel)
+    public static async Task<string> Render(Database database, bool namesOnly, Cancel cancel)
     {
         await using var writer = new StringWriter();
-        await Render(writer, database, cancel);
+        await Render(writer, database, namesOnly, cancel);
         return writer.ToString();
     }
 
-    public static async Task RenderToFile(Database database, string path, Cancel cancel)
+    public static async Task RenderToFile(Database database, string path, bool namesOnly, Cancel cancel)
     {
         await using var writer = File.CreateText(path);
-        await Render(writer, database, cancel);
+        await Render(writer, database, namesOnly, cancel);
     }
 
-    public static async Task<string> RenderSvg(Database database, Cancel cancel)
+    public static async Task<string> RenderSvg(Database database, bool namesOnly, Cancel cancel)
     {
-        var mermaid = await Render(database, cancel);
+        var mermaid = await Render(database, namesOnly, cancel);
         return Mermaid.Render(mermaid);
     }
 
-    public static async Task RenderSvgToFile(Database database, string path, Cancel cancel)
+    public static async Task RenderSvgToFile(Database database, string path, bool namesOnly, Cancel cancel)
     {
-        var svg = await RenderSvg(database, cancel);
+        var svg = await RenderSvg(database, namesOnly, cancel);
         await File.WriteAllTextAsync(path, svg, cancel);
     }
 
-    public static async Task<byte[]> RenderPng(Database database, Cancel cancel)
+    public static async Task<byte[]> RenderPng(Database database, bool namesOnly, Cancel cancel)
     {
-        var mermaid = await Render(database, cancel);
+        var mermaid = await Render(database, namesOnly, cancel);
         return ImageSharpRenderer.RenderPng(mermaid);
     }
 
-    public static async Task RenderPngToFile(Database database, string path, Cancel cancel)
+    public static async Task RenderPngToFile(Database database, string path, bool namesOnly, Cancel cancel)
     {
-        var png = await RenderPng(database, cancel);
+        var png = await RenderPng(database, namesOnly, cancel);
         await File.WriteAllBytesAsync(path, png, cancel);
     }
 
-    public static async Task Render(TextWriter writer, Database database, Cancel cancel)
+    public static async Task Render(TextWriter writer, Database database, bool namesOnly, Cancel cancel)
     {
         await writer.WriteLineAsync("erDiagram");
 
@@ -65,14 +65,19 @@ static class DiagramRender
         {
             cancel.ThrowIfCancellationRequested();
             var tableId = ToMermaidId(table.Schema, table.Name);
+            var header = $"  {tableId}[\"**{tableId}**\"]";
             if (table.Comment is not null)
             {
-                await writer.WriteLineAsync($"  {tableId}[\"**{tableId}**: {table.Comment.Replace("\"", "'")}\"] {{");
+                header = $"  {tableId}[\"**{tableId}**: {table.Comment.Replace("\"", "'")}\"]";
             }
-            else
+
+            if (namesOnly)
             {
-                await writer.WriteLineAsync($"  {tableId}[\"**{tableId}**\"] {{");
+                await writer.WriteLineAsync(header);
+                continue;
             }
+
+            await writer.WriteLineAsync($"{header} {{");
 
             foreach (var column in table.Columns)
             {

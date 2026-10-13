@@ -1,6 +1,6 @@
 static class SchemaReader
 {
-    public static async Task<Database> Read(SqlConnection connection, Cancel cancel)
+    public static async Task<Database> Read(SqlConnection connection, Func<SmoTable, bool>? filter, Cancel cancel)
     {
         var shouldClose = false;
         if (connection.State != ConnectionState.Open)
@@ -18,8 +18,12 @@ static class SchemaReader
             var server = new Server(serverConnection);
             var db = server.Databases[connection.Database];
 
-            var tables = db.Tables
-                .Where(_ => !_.IsSystemObject)
+            var included = db.Tables
+                .Where(_ => !_.IsSystemObject &&
+                            (filter is null || filter(_)))
+                .ToList();
+
+            var tables = included
                 .OrderBy(_ => _.Schema, StringComparer.Ordinal)
                 .ThenBy(_ => _.Name, StringComparer.Ordinal)
                 .Select(table =>
@@ -43,13 +47,11 @@ static class SchemaReader
                 })
                 .ToList();
 
-            var validTables = db.Tables
-                .Where(_ => !_.IsSystemObject)
+            var validTables = included
                 .Select(_ => (_.Schema, _.Name))
                 .ToHashSet();
 
-            var foreignKeys = db.Tables
-                .Where(_ => !_.IsSystemObject)
+            var foreignKeys = included
                 .SelectMany(_ => _.ForeignKeys)
                 .Where(_ => validTables.Contains((_.ReferencedTableSchema, _.ReferencedTable)))
                 .Select(_ => new ForeignKey(
@@ -78,7 +80,7 @@ static class SchemaReader
         }
     }
 
-    static HashSet<string>? GetPrimaryKeys(Microsoft.SqlServer.Management.Smo.Table table)
+    static HashSet<string>? GetPrimaryKeys(SmoTable table)
     {
         var primaryIndexes = table.Indexes
             .FirstOrDefault(_ => _.IndexKeyType == IndexKeyType.DriPrimaryKey);

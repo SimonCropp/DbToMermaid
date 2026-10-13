@@ -35,6 +35,51 @@ public class Tests
     }
 
     [Test]
+    public async Task Filter()
+    {
+        var options = new DbContextOptionsBuilder<SampleDbContext>()
+            .UseSqlServer("Fake")
+            .Options;
+
+        await using var context = new SampleDbContext(options);
+        var model = context.Model;
+
+        #region EfFilter
+
+        var markdown = await EfToMermaid.RenderMarkdown(
+            model,
+            // exclude the Order entity
+            filter: _ => _.ClrType != typeof(Order));
+
+        #endregion
+
+        await Verify(markdown, extension: "md")
+            .AddScrubber(_ => _.Insert(0, '\n'));
+    }
+
+    [Test]
+    public async Task NamesOnly()
+    {
+        var options = new DbContextOptionsBuilder<SampleDbContext>()
+            .UseSqlServer("Fake")
+            .Options;
+
+        await using var context = new SampleDbContext(options);
+        var model = context.Model;
+
+        #region EfNamesOnly
+
+        var markdown = await EfToMermaid.RenderMarkdown(
+            model,
+            namesOnly: true);
+
+        #endregion
+
+        await Verify(markdown, extension: "md")
+            .AddScrubber(_ => _.Insert(0, '\n'));
+    }
+
+    [Test]
     public async Task WithNullable()
     {
         var options = new DbContextOptionsBuilder<WithNullableDbContext>()
