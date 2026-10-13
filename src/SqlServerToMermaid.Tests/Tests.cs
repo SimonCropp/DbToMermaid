@@ -240,6 +240,139 @@ public class Tests
     }
 
     [Test]
+    public async Task Filter()
+    {
+        await using var database = await instance.Build();
+        await using (var command = database.Connection.CreateCommand())
+        {
+            command.CommandText =
+                """
+                create table Customers (
+                    CustomerId int not null primary key,
+                    Name nvarchar(50) not null,
+                    PeriodStart datetime2 generated always as row start not null,
+                    PeriodEnd datetime2 generated always as row end not null,
+                    period for system_time (PeriodStart, PeriodEnd)
+                )
+                with (system_versioning = on (history_table = dbo.CustomersHistory));
+
+                create table Orders (
+                    OrderId int not null primary key,
+                    CustomerId int not null,
+                    constraint FK_Orders_Customers
+                      foreign key (CustomerId)
+                      references Customers(CustomerId)
+                );
+
+                create table AuditLogs (
+                    AuditLogId int not null primary key,
+                    OrderId int not null,
+                    constraint FK_AuditLogs_Orders
+                      foreign key (OrderId)
+                      references Orders(OrderId)
+                );
+                """;
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var connection = database.Connection;
+
+        #region SqlServerFilter
+
+        var markdown = await SqlServerToMermaid.RenderMarkdown(
+            connection,
+            // exclude temporal history tables, and the AuditLogs table
+            filter: _ => _.TemporalType != TableTemporalType.HistoryTable &&
+                         _.Name != "AuditLogs");
+
+        #endregion
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task NamesOnly()
+    {
+        await using var database = await instance.Build();
+        await using (var command = database.Connection.CreateCommand())
+        {
+            command.CommandText =
+                """
+                create table Customers (
+                    CustomerId int not null primary key,
+                    Name nvarchar(50) not null
+                );
+
+                create table Orders (
+                    OrderId int not null primary key,
+                    CustomerId int not null,
+                    constraint FK_Orders_Customers
+                      foreign key (CustomerId)
+                      references Customers(CustomerId)
+                );
+                """;
+            await command.ExecuteNonQueryAsync();
+        }
+
+        var connection = database.Connection;
+
+        #region SqlServerNamesOnly
+
+        var markdown = await SqlServerToMermaid.RenderMarkdown(
+            connection,
+            namesOnly: true);
+
+        #endregion
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task NamesOnlyFromScript()
+    {
+        var script = """
+            create table Customers (
+                CustomerId int primary key,
+                Name nvarchar(50) not null
+            );
+
+            create table Orders (
+                OrderId int primary key,
+                CustomerId int not null,
+                constraint FK_Orders_Customers
+                  foreign key (CustomerId)
+                  references Customers(CustomerId)
+            );
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script, namesOnly: true);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task NamesOnlySvgFromScript()
+    {
+        var script = """
+            create table Customers (
+                CustomerId int primary key
+            );
+
+            create table Orders (
+                OrderId int primary key,
+                CustomerId int not null,
+                constraint FK_Orders_Customers
+                  foreign key (CustomerId)
+                  references Customers(CustomerId)
+            );
+            """;
+
+        var svg = await SqlServerToMermaid.RenderSvgFromScript(script, namesOnly: true);
+
+        await Verify(svg, extension: "svg");
+    }
+
+    [Test]
     public async Task RenderMarkdownWithComments()
     {
         await using var database = await instance.Build();

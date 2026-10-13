@@ -1,9 +1,14 @@
 static class SchemaReader
 {
-    public static Database Read(IModel model)
+    public static Database Read(IModel model, Func<IEntityType, bool>? filter)
     {
-        var tableGroups = model.GetEntityTypes()
-            .Where(_ => !_.IsOwned() && _.GetTableName() is not null)
+        var included = model.GetEntityTypes()
+            .Where(_ => !_.IsOwned() &&
+                        _.GetTableName() is not null &&
+                        (filter is null || filter(_)))
+            .ToList();
+
+        var tableGroups = included
             .GroupBy(_ => (Schema: _.GetSchema(), Table: _.GetTableName()!))
             .OrderBy(_ => _.Key.Schema ?? "dbo", StringComparer.Ordinal)
             .ThenBy(_ => _.Key.Table, StringComparer.Ordinal)
@@ -47,9 +52,9 @@ static class SchemaReader
             tables.Add(new(schema, tableName, properties, pkCols, tableComment));
         }
 
-        var foreignKeys = model.GetEntityTypes()
-            .Where(_ => !_.IsOwned() && _.GetTableName() is not null)
+        var foreignKeys = included
             .SelectMany(_ => _.GetForeignKeys())
+            .Where(_ => filter is null || filter(_.PrincipalEntityType))
             .Select(_ =>
             {
                 var depSchema = _.DeclaringEntityType.GetSchema() ?? "dbo";

@@ -86,6 +86,38 @@ var markdown = await SqlServerToMermaid.RenderMarkdown(sqlConnection);
 <!-- endSnippet -->
 
 
+### Filtering
+
+The methods that take a `SqlConnection` accept an optional `filter` that selects the tables to include. Foreign keys to an excluded table are omitted.
+
+<!-- snippet: SqlServerFilter -->
+<a id='snippet-SqlServerFilter'></a>
+```cs
+var markdown = await SqlServerToMermaid.RenderMarkdown(
+    connection,
+    // exclude temporal history tables, and the AuditLogs table
+    filter: _ => _.TemporalType != TableTemporalType.HistoryTable &&
+                 _.Name != "AuditLogs");
+```
+<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L280-L288' title='Snippet source file'>snippet source</a> | <a href='#snippet-SqlServerFilter' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
+### Names only
+
+Pass `namesOnly` to render only the table names, without columns. Also supported by the `FromScript` methods.
+
+<!-- snippet: SqlServerNamesOnly -->
+<a id='snippet-SqlServerNamesOnly'></a>
+```cs
+var markdown = await SqlServerToMermaid.RenderMarkdown(
+    connection,
+    namesOnly: true);
+```
+<sup><a href='/src/SqlServerToMermaid.Tests/Tests.cs#L319-L325' title='Snippet source file'>snippet source</a> | <a href='#snippet-SqlServerNamesOnly' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ### Result
 
 <!-- include: /SqlServerToMermaid.Tests/Tests.RenderMarkdown.verified.md -->
@@ -403,6 +435,37 @@ await using var context = new SampleDbContext(options);
 var markdown = await EfToMermaid.RenderMarkdown(context.Model);
 ```
 <sup><a href='/src/EfToMermaid.Tests/Tests.cs#L20-L31' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfUsage' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
+### Filtering
+
+An optional `filter` selects the entity types to include. Foreign keys to an excluded entity type are omitted.
+
+<!-- snippet: EfFilter -->
+<a id='snippet-EfFilter'></a>
+```cs
+var markdown = await EfToMermaid.RenderMarkdown(
+    model,
+    // exclude the Order entity
+    filter: _ => _.ClrType != typeof(Order));
+```
+<sup><a href='/src/EfToMermaid.Tests/Tests.cs#L47-L54' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfFilter' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
+### Names only
+
+Pass `namesOnly` to render only the table names, without columns.
+
+<!-- snippet: EfNamesOnly -->
+<a id='snippet-EfNamesOnly'></a>
+```cs
+var markdown = await EfToMermaid.RenderMarkdown(
+    model,
+    namesOnly: true);
+```
+<sup><a href='/src/EfToMermaid.Tests/Tests.cs#L70-L76' title='Snippet source file'>snippet source</a> | <a href='#snippet-EfNamesOnly' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
