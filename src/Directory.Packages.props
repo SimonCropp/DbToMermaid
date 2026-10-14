@@ -2,7 +2,7 @@
   <ItemGroup>
     <PackageVersion Include="CliFx" Version="3.0.1" />
     <PackageVersion Include="LocalDb" Version="27.2.5" />
-    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.5.0" />
+    <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.5.1" />
     <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.1" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.13" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.13" />
