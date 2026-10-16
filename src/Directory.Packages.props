@@ -1,4 +1,7 @@
 <Project>
+  <PropertyGroup>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="CliFx" Version="3.0.1" />
     <PackageVersion Include="LocalDb" Version="27.2.5" />
@@ -14,5 +17,6 @@
     <PackageVersion Include="ProjectDefaults" Version="1.0.184" />
     <PackageVersion Include="TUnit" Version="1.75.0" />
     <PackageVersion Include="Verify.TUnit" Version="33.3.3" />
+    <PackageVersion Include="System.Security.Cryptography.Pkcs" Version="10.0.13" />
   </ItemGroup>
 </Project>
