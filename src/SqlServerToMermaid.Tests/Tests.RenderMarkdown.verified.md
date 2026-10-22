@@ -1,7 +1,7 @@
 ﻿
 ```mermaid
 erDiagram
-  Company["**Company**"] {
+  "Company"["**Company**"] {
     int Id pk
     nvarchar(200) Name
     varchar(50)(nullable) TaxNumber
@@ -10,7 +10,7 @@ erDiagram
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
-  Customer["**Customer**"] {
+  "Customer"["**Customer**"] {
     int Id pk
     nvarchar(100) FirstName
     nvarchar(100) LastName
@@ -20,7 +20,7 @@ erDiagram
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
-  Employee["**Employee**"] {
+  "Employee"["**Employee**"] {
     int Id pk
     nvarchar(100) FirstName
     nvarchar(100) LastName
@@ -32,7 +32,7 @@ erDiagram
     datetime2(nullable) ModifiedAt
     int(nullable) ManagerId
   }
-  Manager["**Manager**"] {
+  "Manager"["**Manager**"] {
     int Id pk
     int EmployeeId
     nvarchar(100) Department
@@ -40,7 +40,7 @@ erDiagram
     date StartDate
     date(nullable) EndDate
   }
-  Order["**Order**"] {
+  "Order"["**Order**"] {
     int Id pk
     varchar(30) OrderNumber
     int CustomerId
@@ -53,7 +53,7 @@ erDiagram
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
-  OrderItem["**OrderItem**"] {
+  "OrderItem"["**OrderItem**"] {
     int Id pk
     int OrderId
     int ProductId
@@ -62,7 +62,7 @@ erDiagram
     decimal(18,2) Discount
     decimal(30,2)(nullable) LineTotal "computed"
   }
-  Product["**Product**"] {
+  "Product"["**Product**"] {
     int Id pk
     varchar(50) Sku
     nvarchar(200) Name
@@ -73,11 +73,11 @@ erDiagram
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
   }
-  Company ||--o{ Customer : "FK_Customer_Company"
-  Company ||--o{ Employee : "FK_Employee_Company"
-  Customer ||--o{ Order : "FK_Order_Customer"
-  Employee ||--o{ Manager : "FK_Manager_Employee"
-  Manager ||--o{ Employee : "FK_Employee_Manager"
-  Order ||--o{ OrderItem : "FK_OrderItem_Order"
-  Product ||--o{ OrderItem : "FK_OrderItem_Product"
+  "Company" ||--o{ "Customer" : "FK_Customer_Company"
+  "Company" ||--o{ "Employee" : "FK_Employee_Company"
+  "Customer" ||--o{ "Order" : "FK_Order_Customer"
+  "Employee" ||--o{ "Manager" : "FK_Manager_Employee"
+  "Manager" ||--o{ "Employee" : "FK_Employee_Manager"
+  "Order" ||--o{ "OrderItem" : "FK_OrderItem_Order"
+  "Product" ||--o{ "OrderItem" : "FK_OrderItem_Product"
 ```

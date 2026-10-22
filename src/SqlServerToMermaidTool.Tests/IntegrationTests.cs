@@ -243,6 +243,26 @@ public class IntegrationTests
         """;
 
     [Test]
+    public async Task RawSqlWithMermaidKeywords_ToSvg()
+    {
+        using var outputPath = new TempFile(extension: ".svg");
+        var console = new FakeInMemoryConsole();
+        var cmd = new RenderCommand
+        {
+            Input =
+                """
+                create table class (Id int primary key);
+                create table style (Id int primary key, ClassId int not null, constraint FK_style_class foreign key (ClassId) references class(Id));
+                """,
+            Output = outputPath
+        };
+
+        await cmd.ExecuteAsync(console);
+
+        await VerifyFile(outputPath);
+    }
+
+    [Test]
     public async Task CustomNewLine()
     {
         using var outputPath = new TempFile(extension: ".mmd");

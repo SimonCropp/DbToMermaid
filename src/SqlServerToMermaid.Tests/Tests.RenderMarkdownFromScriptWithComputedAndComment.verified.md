@@ -1,6 +1,6 @@
 ﻿```mermaid
 erDiagram
-  Employee["**Employee**"] {
+  "Employee"["**Employee**"] {
     int Id pk
     decimal(18,2) Salary
     decimal(18,2) Bonus
