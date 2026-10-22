@@ -551,6 +551,49 @@ public class Tests
     }
 
     [Test]
+    public async Task RenderMarkdownFromScriptWithMermaidKeywords()
+    {
+        var script = """
+            create table Class
+            (
+                Id   int primary key,
+                Name nvarchar(100) not null
+            );
+
+            create table Style
+            (
+                Id int primary key
+            );
+
+            create table [End]
+            (
+                Id      int primary key,
+                ClassId int not null,
+                StyleId int null,
+
+                constraint FK_End_Class
+                  foreign key (ClassId)
+                  references Class(Id),
+
+                constraint FK_End_Style
+                  foreign key (StyleId)
+                  references Style(Id)
+            );
+
+            exec sp_addextendedproperty
+                @name = N'MS_Description',
+                @value = N'A class
+            spanning lines',
+                @level0type = N'schema', @level0name = N'dbo',
+                @level1type = N'table',  @level1name = N'Class';
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
     public async Task RenderMarkdownFromScriptWithSchema()
     {
         var script = """

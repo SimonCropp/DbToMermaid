@@ -65,10 +65,11 @@ static class DiagramRender
         {
             cancel.ThrowIfCancellationRequested();
             var tableId = ToMermaidId(table.Schema, table.Name);
-            var header = $"  {tableId}[\"**{tableId}**\"]";
+            var entityName = ToEntityName(table.Schema, table.Name);
+            var header = $"  {entityName}[\"**{tableId}**\"]";
             if (table.Comment is not null)
             {
-                header = $"  {tableId}[\"**{tableId}**: {table.Comment.Replace("\"", "'")}\"]";
+                header = $"  {entityName}[\"**{tableId}**: {EscapeText(table.Comment)}\"]";
             }
 
             if (namesOnly)
@@ -96,16 +97,16 @@ static class DiagramRender
     static Task RenderForeignKey(TextWriter writer, ForeignKey foreignKey, Cancel cancel)
     {
         cancel.ThrowIfCancellationRequested();
-        var referencedId = ToMermaidId(foreignKey.ReferencedSchema, foreignKey.ReferencedTable);
-        var parentId = ToMermaidId(foreignKey.ParentSchema, foreignKey.ParentTable);
-        return writer.WriteLineAsync($"  {referencedId} ||--o{{ {parentId} : \"{foreignKey.Name}\"");
+        var referencedName = ToEntityName(foreignKey.ReferencedSchema, foreignKey.ReferencedTable);
+        var parentName = ToEntityName(foreignKey.ParentSchema, foreignKey.ParentTable);
+        return writer.WriteLineAsync($"  {referencedName} ||--o{{ {parentName} : \"{EscapeText(foreignKey.Name)}\"");
     }
 
     static Task RenderColumn(TextWriter writer, Column column, Table table, Cancel cancel)
     {
         cancel.ThrowIfCancellationRequested();
 
-        string EscapeComment() => column.Comment!.Replace("\"", "'");
+        string EscapeComment() => EscapeText(column.Comment!);
 
         var colId = ToMermaidIdentifier(column.Name);
         var type = column.IsNullable ? $"{column.Type}(nullable)" : column.Type;
@@ -190,4 +191,15 @@ static class DiagramRender
 
         return ToMermaidIdentifier($"{schema}_{table}");
     }
+
+    // Always quoted, since Mermaid reads keywords case-insensitively and some (class, style, end, one, many, to)
+    // are plausible table names. A bare `Class` would be parsed as a class statement.
+    static string ToEntityName(string schema, string table) =>
+        $"\"{ToMermaidId(schema, table)}\"";
+
+    // Text inside a quoted string can not hold a double quote, and a line break ends the statement.
+    static string EscapeText(string value) =>
+        value
+            .Replace("\"", "'")
+            .ReplaceLineEndings(" ");
 }

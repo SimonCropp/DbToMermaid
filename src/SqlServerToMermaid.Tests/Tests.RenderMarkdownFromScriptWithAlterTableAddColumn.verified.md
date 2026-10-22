@@ -1,10 +1,10 @@
 ﻿```mermaid
 erDiagram
-  Items["**Items**"] {
+  "Items"["**Items**"] {
     int Id pk
     nvarchar(100) Name
   }
-  NewTable["**NewTable**"] {
+  "NewTable"["**NewTable**"] {
     int(nullable) Value
   }
 ```

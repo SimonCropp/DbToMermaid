@@ -1,11 +1,11 @@
 ﻿```mermaid
 erDiagram
-  Company["**Company**"] {
+  "Company"["**Company**"] {
     int Id pk
     nvarchar(200) Name
     datetime2 CreatedAt
   }
-  Employee["**Employee**"] {
+  "Employee"["**Employee**"] {
     int Id pk
     nvarchar(100) FirstName
     nvarchar(100) LastName
@@ -14,5 +14,5 @@ erDiagram
     decimal(18,2) Bonus
     unknown(nullable) TotalPay "computed"
   }
-  Company ||--o{ Employee : "FK_Employee_Company"
+  "Company" ||--o{ "Employee" : "FK_Employee_Company"
 ```
