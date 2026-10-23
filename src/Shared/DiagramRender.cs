@@ -1,63 +1,63 @@
 static class DiagramRender
 {
-    public static async Task RenderMarkdown(TextWriter writer, Database database, bool namesOnly, Cancel cancel)
+    public static async Task RenderMarkdown(TextWriter writer, Database database, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
         await writer.WriteLineAsync("```mermaid");
-        await Render(writer, database, namesOnly, cancel);
+        await Render(writer, database, namesOnly, relationshipLabels, cancel);
         await writer.WriteAsync("```");
     }
 
-    public static async Task<string> RenderMarkdown(Database database, bool namesOnly, Cancel cancel)
+    public static async Task<string> RenderMarkdown(Database database, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
         await using var writer = new StringWriter();
-        await RenderMarkdown(writer, database, namesOnly, cancel);
+        await RenderMarkdown(writer, database, namesOnly, relationshipLabels, cancel);
         return writer.ToString();
     }
 
-    public static async Task RenderMarkdownToFile(Database database, string path, bool namesOnly, Cancel cancel)
+    public static async Task RenderMarkdownToFile(Database database, string path, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
         await using var writer = File.CreateText(path);
-        await RenderMarkdown(writer, database, namesOnly, cancel);
+        await RenderMarkdown(writer, database, namesOnly, relationshipLabels, cancel);
     }
 
-    public static async Task<string> Render(Database database, bool namesOnly, Cancel cancel)
+    public static async Task<string> Render(Database database, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
         await using var writer = new StringWriter();
-        await Render(writer, database, namesOnly, cancel);
+        await Render(writer, database, namesOnly, relationshipLabels, cancel);
         return writer.ToString();
     }
 
-    public static async Task RenderToFile(Database database, string path, bool namesOnly, Cancel cancel)
+    public static async Task RenderToFile(Database database, string path, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
         await using var writer = File.CreateText(path);
-        await Render(writer, database, namesOnly, cancel);
+        await Render(writer, database, namesOnly, relationshipLabels, cancel);
     }
 
-    public static async Task<string> RenderSvg(Database database, bool namesOnly, Cancel cancel)
+    public static async Task<string> RenderSvg(Database database, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
-        var mermaid = await Render(database, namesOnly, cancel);
+        var mermaid = await Render(database, namesOnly, relationshipLabels, cancel);
         return Mermaid.Render(mermaid);
     }
 
-    public static async Task RenderSvgToFile(Database database, string path, bool namesOnly, Cancel cancel)
+    public static async Task RenderSvgToFile(Database database, string path, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
-        var svg = await RenderSvg(database, namesOnly, cancel);
+        var svg = await RenderSvg(database, namesOnly, relationshipLabels, cancel);
         await File.WriteAllTextAsync(path, svg, cancel);
     }
 
-    public static async Task<byte[]> RenderPng(Database database, bool namesOnly, Cancel cancel)
+    public static async Task<byte[]> RenderPng(Database database, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
-        var mermaid = await Render(database, namesOnly, cancel);
+        var mermaid = await Render(database, namesOnly, relationshipLabels, cancel);
         return ImageSharpRenderer.RenderPng(mermaid);
     }
 
-    public static async Task RenderPngToFile(Database database, string path, bool namesOnly, Cancel cancel)
+    public static async Task RenderPngToFile(Database database, string path, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
-        var png = await RenderPng(database, namesOnly, cancel);
+        var png = await RenderPng(database, namesOnly, relationshipLabels, cancel);
         await File.WriteAllBytesAsync(path, png, cancel);
     }
 
-    public static async Task Render(TextWriter writer, Database database, bool namesOnly, Cancel cancel)
+    public static async Task Render(TextWriter writer, Database database, bool namesOnly, bool relationshipLabels, Cancel cancel)
     {
         await writer.WriteLineAsync("erDiagram");
 
@@ -90,16 +90,18 @@ static class DiagramRender
 
         foreach (var foreignKey in database.ForeignKeys)
         {
-            await RenderForeignKey(writer, foreignKey, cancel);
+            await RenderForeignKey(writer, foreignKey, relationshipLabels, cancel);
         }
     }
 
-    static Task RenderForeignKey(TextWriter writer, ForeignKey foreignKey, Cancel cancel)
+    static Task RenderForeignKey(TextWriter writer, ForeignKey foreignKey, bool relationshipLabels, Cancel cancel)
     {
         cancel.ThrowIfCancellationRequested();
         var referencedName = ToEntityName(foreignKey.ReferencedSchema, foreignKey.ReferencedTable);
         var parentName = ToEntityName(foreignKey.ParentSchema, foreignKey.ParentTable);
-        return writer.WriteLineAsync($"  {referencedName} ||--o{{ {parentName} : \"{EscapeText(foreignKey.Name)}\"");
+        // Mermaid requires a label on every relationship, so an omitted one is rendered as empty.
+        var label = relationshipLabels ? EscapeText(foreignKey.Name) : "";
+        return writer.WriteLineAsync($"  {referencedName} ||--o{{ {parentName} : \"{label}\"");
     }
 
     static Task RenderColumn(TextWriter writer, Column column, Table table, Cancel cancel)
@@ -109,7 +111,11 @@ static class DiagramRender
         string EscapeComment() => EscapeText(column.Comment!);
 
         var colId = ToMermaidIdentifier(column.Name);
-        var type = column.IsNullable ? $"{column.Type}(nullable)" : column.Type;
+        var type = ToMermaidType(column.Type);
+        if (column.IsNullable)
+        {
+            type += "(nullable)";
+        }
         var isKey = table.PrimaryKeys is not null &&
                     table.PrimaryKeys.Contains(column.Name);
 
@@ -177,6 +183,25 @@ static class DiagramRender
         if (char.IsDigit(builder[0]))
         {
             builder.Insert(0, '_');
+        }
+
+        return builder.ToString();
+    }
+
+    // A Mermaid attribute type can not hold a comma or whitespace, so "decimal(18, 2)" becomes "decimal(18-2)".
+    static string ToMermaidType(string type)
+    {
+        var builder = new StringBuilder(type.Length);
+        foreach (var ch in type)
+        {
+            if (ch == ',')
+            {
+                builder.Append('-');
+            }
+            else if (!char.IsWhiteSpace(ch))
+            {
+                builder.Append(ch);
+            }
         }
 
         return builder.ToString();

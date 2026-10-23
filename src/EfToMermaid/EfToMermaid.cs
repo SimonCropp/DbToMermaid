@@ -11,12 +11,13 @@ public static class EfToMermaid
     /// <param name="model">The Entity Framework Core model to render.</param>
     /// <param name="filter">Optional predicate selecting the entity types to include. Foreign keys to an excluded entity type are omitted.</param>
     /// <param name="namesOnly">When true, only the table names are rendered, without columns.</param>
+    /// <param name="relationshipLabels">When false, relationships are rendered without the foreign key name as a label.</param>
     /// <param name="cancel">Optional cancellation token.</param>
     /// <returns>A Markdown string containing the Mermaid ER diagram.</returns>
-    public static Task<string> RenderMarkdown(IModel model, Func<IEntityType, bool>? filter = null, bool namesOnly = false, Cancel cancel = default)
+    public static Task<string> RenderMarkdown(IModel model, Func<IEntityType, bool>? filter = null, bool namesOnly = false, bool relationshipLabels = true, Cancel cancel = default)
     {
         var database = SchemaReader.Read(model, filter);
-        return DiagramRender.RenderMarkdown(database, namesOnly, cancel);
+        return DiagramRender.RenderMarkdown(database, namesOnly, relationshipLabels, cancel);
     }
 
     /// <summary>
@@ -25,12 +26,13 @@ public static class EfToMermaid
     /// <param name="model">The Entity Framework Core model to render.</param>
     /// <param name="filter">Optional predicate selecting the entity types to include. Foreign keys to an excluded entity type are omitted.</param>
     /// <param name="namesOnly">When true, only the table names are rendered, without columns.</param>
+    /// <param name="relationshipLabels">When false, relationships are rendered without the foreign key name as a label.</param>
     /// <param name="cancel">Optional cancellation token.</param>
     /// <returns>A string containing the Mermaid ER diagram.</returns>
-    public static Task<string> Render(IModel model, Func<IEntityType, bool>? filter = null, bool namesOnly = false, Cancel cancel = default)
+    public static Task<string> Render(IModel model, Func<IEntityType, bool>? filter = null, bool namesOnly = false, bool relationshipLabels = true, Cancel cancel = default)
     {
         var database = SchemaReader.Read(model, filter);
-        return DiagramRender.Render(database, namesOnly, cancel);
+        return DiagramRender.Render(database, namesOnly, relationshipLabels, cancel);
     }
 
     /// <summary>
@@ -40,11 +42,12 @@ public static class EfToMermaid
     /// <param name="writer">The TextWriter to write the diagram to.</param>
     /// <param name="filter">Optional predicate selecting the entity types to include. Foreign keys to an excluded entity type are omitted.</param>
     /// <param name="namesOnly">When true, only the table names are rendered, without columns.</param>
+    /// <param name="relationshipLabels">When false, relationships are rendered without the foreign key name as a label.</param>
     /// <param name="cancel">Optional cancellation token.</param>
-    public static Task Render(IModel model, TextWriter writer, Func<IEntityType, bool>? filter = null, bool namesOnly = false, Cancel cancel = default)
+    public static Task Render(IModel model, TextWriter writer, Func<IEntityType, bool>? filter = null, bool namesOnly = false, bool relationshipLabels = true, Cancel cancel = default)
     {
         var database = SchemaReader.Read(model, filter);
-        return DiagramRender.Render(writer, database, namesOnly, cancel);
+        return DiagramRender.Render(writer, database, namesOnly, relationshipLabels, cancel);
     }
 
     /// <summary>
@@ -54,11 +57,12 @@ public static class EfToMermaid
     /// <param name="path">The file path to write the diagram to.</param>
     /// <param name="filter">Optional predicate selecting the entity types to include. Foreign keys to an excluded entity type are omitted.</param>
     /// <param name="namesOnly">When true, only the table names are rendered, without columns.</param>
+    /// <param name="relationshipLabels">When false, relationships are rendered without the foreign key name as a label.</param>
     /// <param name="cancel">Optional cancellation token.</param>
-    public static Task RenderMarkdownToFile(IModel model, string path, Func<IEntityType, bool>? filter = null, bool namesOnly = false, Cancel cancel = default)
+    public static Task RenderMarkdownToFile(IModel model, string path, Func<IEntityType, bool>? filter = null, bool namesOnly = false, bool relationshipLabels = true, Cancel cancel = default)
     {
         var database = SchemaReader.Read(model, filter);
-        return DiagramRender.RenderMarkdownToFile(database, path, namesOnly, cancel);
+        return DiagramRender.RenderMarkdownToFile(database, path, namesOnly, relationshipLabels, cancel);
     }
 
     /// <summary>
@@ -68,11 +72,12 @@ public static class EfToMermaid
     /// <param name="path">The file path to write the diagram to.</param>
     /// <param name="filter">Optional predicate selecting the entity types to include. Foreign keys to an excluded entity type are omitted.</param>
     /// <param name="namesOnly">When true, only the table names are rendered, without columns.</param>
+    /// <param name="relationshipLabels">When false, relationships are rendered without the foreign key name as a label.</param>
     /// <param name="cancel">Optional cancellation token.</param>
-    public static Task RenderToFile(IModel model, string path, Func<IEntityType, bool>? filter = null, bool namesOnly = false, Cancel cancel = default)
+    public static Task RenderToFile(IModel model, string path, Func<IEntityType, bool>? filter = null, bool namesOnly = false, bool relationshipLabels = true, Cancel cancel = default)
     {
         var database = SchemaReader.Read(model, filter);
-        return DiagramRender.RenderToFile(database, path, namesOnly, cancel);
+        return DiagramRender.RenderToFile(database, path, namesOnly, relationshipLabels, cancel);
     }
 
     /// <summary>
@@ -81,12 +86,13 @@ public static class EfToMermaid
     /// <param name="model">The Entity Framework Core model to render.</param>
     /// <param name="filter">Optional predicate selecting the entity types to include. Foreign keys to an excluded entity type are omitted.</param>
     /// <param name="namesOnly">When true, only the table names are rendered, without columns.</param>
+    /// <param name="relationshipLabels">When false, relationships are rendered without the foreign key name as a label.</param>
     /// <param name="cancel">Optional cancellation token.</param>
     /// <returns>A string containing the SVG.</returns>
-    public static Task<string> RenderSvg(IModel model, Func<IEntityType, bool>? filter = null, bool namesOnly = false, Cancel cancel = default)
+    public static Task<string> RenderSvg(IModel model, Func<IEntityType, bool>? filter = null, bool namesOnly = false, bool relationshipLabels = true, Cancel cancel = default)
     {
         var database = SchemaReader.Read(model, filter);
-        return DiagramRender.RenderSvg(database, namesOnly, cancel);
+        return DiagramRender.RenderSvg(database, namesOnly, relationshipLabels, cancel);
     }
 
     /// <summary>
@@ -96,11 +102,12 @@ public static class EfToMermaid
     /// <param name="path">The file path to write the SVG to.</param>
     /// <param name="filter">Optional predicate selecting the entity types to include. Foreign keys to an excluded entity type are omitted.</param>
     /// <param name="namesOnly">When true, only the table names are rendered, without columns.</param>
+    /// <param name="relationshipLabels">When false, relationships are rendered without the foreign key name as a label.</param>
     /// <param name="cancel">Optional cancellation token.</param>
-    public static Task RenderSvgToFile(IModel model, string path, Func<IEntityType, bool>? filter = null, bool namesOnly = false, Cancel cancel = default)
+    public static Task RenderSvgToFile(IModel model, string path, Func<IEntityType, bool>? filter = null, bool namesOnly = false, bool relationshipLabels = true, Cancel cancel = default)
     {
         var database = SchemaReader.Read(model, filter);
-        return DiagramRender.RenderSvgToFile(database, path, namesOnly, cancel);
+        return DiagramRender.RenderSvgToFile(database, path, namesOnly, relationshipLabels, cancel);
     }
 
     /// <summary>
@@ -109,12 +116,13 @@ public static class EfToMermaid
     /// <param name="model">The Entity Framework Core model to render.</param>
     /// <param name="filter">Optional predicate selecting the entity types to include. Foreign keys to an excluded entity type are omitted.</param>
     /// <param name="namesOnly">When true, only the table names are rendered, without columns.</param>
+    /// <param name="relationshipLabels">When false, relationships are rendered without the foreign key name as a label.</param>
     /// <param name="cancel">Optional cancellation token.</param>
     /// <returns>The PNG bytes.</returns>
-    public static Task<byte[]> RenderPng(IModel model, Func<IEntityType, bool>? filter = null, bool namesOnly = false, Cancel cancel = default)
+    public static Task<byte[]> RenderPng(IModel model, Func<IEntityType, bool>? filter = null, bool namesOnly = false, bool relationshipLabels = true, Cancel cancel = default)
     {
         var database = SchemaReader.Read(model, filter);
-        return DiagramRender.RenderPng(database, namesOnly, cancel);
+        return DiagramRender.RenderPng(database, namesOnly, relationshipLabels, cancel);
     }
 
     /// <summary>
@@ -124,10 +132,11 @@ public static class EfToMermaid
     /// <param name="path">The file path to write the PNG to.</param>
     /// <param name="filter">Optional predicate selecting the entity types to include. Foreign keys to an excluded entity type are omitted.</param>
     /// <param name="namesOnly">When true, only the table names are rendered, without columns.</param>
+    /// <param name="relationshipLabels">When false, relationships are rendered without the foreign key name as a label.</param>
     /// <param name="cancel">Optional cancellation token.</param>
-    public static Task RenderPngToFile(IModel model, string path, Func<IEntityType, bool>? filter = null, bool namesOnly = false, Cancel cancel = default)
+    public static Task RenderPngToFile(IModel model, string path, Func<IEntityType, bool>? filter = null, bool namesOnly = false, bool relationshipLabels = true, Cancel cancel = default)
     {
         var database = SchemaReader.Read(model, filter);
-        return DiagramRender.RenderPngToFile(database, path, namesOnly, cancel);
+        return DiagramRender.RenderPngToFile(database, path, namesOnly, relationshipLabels, cancel);
     }
 }

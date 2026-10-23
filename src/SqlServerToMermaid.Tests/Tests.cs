@@ -373,6 +373,44 @@ public class Tests
     }
 
     [Test]
+    public async Task NoRelationshipLabelsFromScript()
+    {
+        var script = """
+            create table Customers (
+                CustomerId int primary key
+            );
+
+            create table Orders (
+                OrderId int primary key,
+                CustomerId int not null,
+                constraint FK_Orders_Customers
+                  foreign key (CustomerId)
+                  references Customers(CustomerId)
+            );
+            """;
+
+        var markdown = await SqlServerToMermaid.RenderMarkdownFromScript(script, relationshipLabels: false);
+
+        await Verify(markdown, extension: "md");
+    }
+
+    [Test]
+    public async Task MultiParameterTypeSvgFromScript()
+    {
+        var script = """
+            create table Products (
+                ProductId int primary key,
+                Price decimal(18, 2) not null,
+                Weight numeric(10, 3) null
+            );
+            """;
+
+        var svg = await SqlServerToMermaid.RenderSvgFromScript(script);
+
+        await Verify(svg, extension: "svg");
+    }
+
+    [Test]
     public async Task RenderMarkdownWithComments()
     {
         await using var database = await instance.Build();
