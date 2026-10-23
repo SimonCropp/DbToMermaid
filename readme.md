@@ -168,9 +168,9 @@ erDiagram
     int CustomerId
     datetime2 OrderDate
     varchar(20) Status
-    decimal(18,2) SubTotal
-    decimal(18,2) Tax
-    decimal(18,2) Total
+    decimal(18-2) SubTotal
+    decimal(18-2) Tax
+    decimal(18-2) Total
     nvarchar(1000)(nullable) Notes
     datetime2 CreatedAt
     datetime2(nullable) ModifiedAt
@@ -180,16 +180,16 @@ erDiagram
     int OrderId
     int ProductId
     int Quantity
-    decimal(18,2) UnitPrice
-    decimal(18,2) Discount
-    decimal(30,2)(nullable) LineTotal "computed"
+    decimal(18-2) UnitPrice
+    decimal(18-2) Discount
+    decimal(30-2)(nullable) LineTotal "computed"
   }
   "Product"["**Product**"] {
     int Id pk
     varchar(50) Sku
     nvarchar(200) Name
     nvarchar(max)(nullable) Description
-    decimal(18,2) UnitPrice
+    decimal(18-2) UnitPrice
     int StockQty
     bit IsActive
     datetime2 CreatedAt

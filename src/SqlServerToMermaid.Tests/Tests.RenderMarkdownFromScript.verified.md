@@ -10,8 +10,8 @@ erDiagram
     nvarchar(100) FirstName
     nvarchar(100) LastName
     int CompanyId
-    decimal(18,2) Salary
-    decimal(18,2) Bonus
+    decimal(18-2) Salary
+    decimal(18-2) Bonus
     unknown(nullable) TotalPay "computed"
   }
   "Company" ||--o{ "Employee" : "FK_Employee_Company"
