@@ -55,6 +55,29 @@ jobs:
       - name: Build
         run: dotnet build src --configuration Release ${{ env.VERSION_ARGUMENT }}
 
+      # LocalDB occasionally fails its first startup on a fresh runner ("SQL Server process failed
+      # to start"). Start it here with retries, recreating the instance between attempts, so a slow
+      # start fails fast with a clear message rather than as connection errors in every test.
+      # sqllocaldb exits 0 even when a start fails, so success is read from the instance state.
+      - name: Start LocalDB
+        shell: pwsh
+        run: |
+          for ($attempt = 1; $attempt -le 5; $attempt++) {
+            sqllocaldb start MSSQLLocalDB
+            $info = sqllocaldb info MSSQLLocalDB
+            if ($info -match '^State:\s+Running') {
+              $info
+              exit 0
+            }
+            Write-Host "LocalDB start attempt $attempt failed. Recreating the instance."
+            sqllocaldb stop MSSQLLocalDB -k
+            sqllocaldb delete MSSQLLocalDB
+            sqllocaldb create MSSQLLocalDB
+            Start-Sleep -Seconds (10 * $attempt)
+          }
+          Write-Error "LocalDB failed to start after 5 attempts."
+          exit 1
+
       - name: Test
         shell: bash
         run: |
