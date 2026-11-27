@@ -11,7 +11,8 @@ public class ErrorHandlingTests
             Output = outputPath
         };
 
-        await ThrowsValueTask(() => command.ExecuteAsync(console));
+        await ThrowsValueTask(() => command.ExecuteAsync(console))
+            .ScrubLinesWithReplace(_ => Regex.Replace(_, @"\(provider: [^)]*\)", "(provider: {Scrubbed})"));
     }
 
     [Test]
@@ -26,7 +27,8 @@ public class ErrorHandlingTests
             Output = outputPath
         };
 
-        await ThrowsValueTask(() => command.ExecuteAsync(console));
+        await ThrowsValueTask(() => command.ExecuteAsync(console))
+            .ScrubLinesWithReplace(_ => Regex.Replace(_, @"\(provider: [^)]*\)", "(provider: {Scrubbed})"));
     }
 
     [Test]
